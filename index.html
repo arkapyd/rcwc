@@ -36,25 +36,57 @@
    real cricket world cup · season one — design tokens
    ============================================================ */
 :root{
-/* THEME — "Floodlight": a sleek monochrome wash of cool steel-blue under the lights.
-     Two tonal brand colours, both independent of every team colour. */
-  --accent: #86acd8;          /* floodlight steel-blue — primary */
-  --accent-rgb: 134, 172, 216;
-  --accent-deep: #5a82b6;     /* deeper steel — gradient depth */
-  --accent-2: #3d6fb0;        /* deep azure — tonal secondary glow */
-  --accent-2-rgb: 61, 111, 176;
-  --bg: #0a0a0a;
-  --surface: #141414;
-  --surface-2: #1c1c1c;
-  --surface-3: #242424;
-  --border: #262626;
-  --border-bright: #383838;
-  --text: #f5f5f4;
-  --text-muted: #a3a3a3;
-  --text-dim: #737373;
-  --win: #84cc16;
-  --loss: #ef4444;
-  --tie: #facc15;
+/* THEME — "Pavilion": a retro scorebook palette. Deep crimson-maroon ink printed
+     on creamy off-white stock, the way a 1950s county annual was set. Both brand
+     colours are independent of every nation's colours. */
+  --accent: #8e1b2d;          /* crimson maroon — primary */
+  --accent-rgb: 142, 27, 45;
+  --accent-deep: #6d1222;     /* deeper maroon — gradient depth */
+  --accent-2: #b8452f;        /* warm brick — tonal secondary glow */
+  --accent-2-rgb: 184, 69, 47;
+  --bg: #f5ece0;
+  --bg-rgb: 245, 236, 224;
+  --surface: #fdf7ee;
+  --surface-2: #f3e7d7;
+  --surface-3: #e9dac6;
+  --border: #e0d1bb;
+  --border-bright: #c8b295;
+  --text: #2e1418;
+  --text-muted: #6f5a52;
+  --text-dim: #9c877b;
+  /* semantic result colours — every rgba() in the sheet reads these, so both
+     themes stay consistent without a single hardcoded triple */
+  --win: #2f7d3a;        --win-rgb: 47, 125, 58;      --win-soft: #2f7d3a;
+  --loss: #b3261e;       --loss-rgb: 179, 38, 30;     --loss-soft: #c0392b;
+  --tie: #9a6f12;        --tie-rgb: 200, 155, 25;
+  --gold: #8a6410;       --gold-rgb: 196, 148, 32;
+  --longshot: #b45309;   --longshot-rgb: 234, 120, 30;
+}
+
+/* KNOCKOUTS — the whole palette flips: cream and parchment printed on crimson.
+   These sit on `body`, so they override any inline --accent the takeover engine
+   may have written onto <html>. */
+body.playoffs-mode-active{
+  --accent: #f3dfbe;
+  --accent-rgb: 243, 223, 190;
+  --accent-deep: #d9c19a;
+  --accent-2: #e0b483;
+  --accent-2-rgb: 224, 180, 131;
+  --bg: #6b1122;
+  --bg-rgb: 107, 17, 34;
+  --surface: #7d1b2c;
+  --surface-2: #8d2536;
+  --surface-3: #9c3040;
+  --border: #93303f;
+  --border-bright: #b4505d;
+  --text: #fdf4e6;
+  --text-muted: #e9cfc7;
+  --text-dim: #c9a096;
+  --win: #a8dd7a;        --win-rgb: 168, 221, 122;    --win-soft: #c2ec9c;
+  --loss: #ff9d90;       --loss-rgb: 255, 157, 144;   --loss-soft: #ffb3a8;
+  --tie: #ffd98a;        --tie-rgb: 255, 217, 138;
+  --gold: #ffd76a;       --gold-rgb: 255, 215, 106;
+  --longshot: #ffb373;   --longshot-rgb: 255, 179, 115;
 }
 
 *{ box-sizing:border-box; }
@@ -95,7 +127,7 @@ table th.num,
    ============================================================ */
 .ribbon{
   position:fixed; top:0; left:0; right:0; height:64px;
-  background:rgba(10,10,10,.92);
+  background:rgba(var(--bg-rgb),.92);
   backdrop-filter:blur(20px);
   -webkit-backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
@@ -126,11 +158,11 @@ table th.num,
 /* playoffs mode badge & spark animation */
 .playoffs-badge {
   display: none;
-  color: #b4d455;
+  color: var(--accent);
   font-style: italic;
   font-weight: 800;
   letter-spacing: 0.12em;
-  text-shadow: 0 0 14px rgba(180, 212, 85, 0.8), 0 0 4px rgba(180, 212, 85, 0.4);
+  text-shadow: 0 0 14px rgba(var(--accent-rgb),0.8), 0 0 4px rgba(var(--accent-rgb),0.4);
   position: relative;
 }
 body.playoffs-mode-active .playoffs-badge {
@@ -141,9 +173,9 @@ body.playoffs-mode-active .playoffs-badge {
   bottom: 2px;
   width: 3px;
   height: 3px;
-  background: #b4d455;
+  background: var(--accent);
   border-radius: 50%;
-  box-shadow: 0 0 6px 2px #b4d455;
+  box-shadow: 0 0 6px 2px var(--accent);
   opacity: 0;
   animation: playoff-fire 1.2s infinite ease-in;
   pointer-events: none;
@@ -211,7 +243,7 @@ body.playoffs-mode-active .playoffs-badge {
   font-family:'JetBrains Mono',monospace;
   font-size:.62rem; font-weight:700; letter-spacing:.1em;
   color:var(--accent);
-  background:rgba(10,10,10,.92);
+  background:rgba(var(--bg-rgb),.92);
   border:1px solid rgba(var(--accent-rgb),.5);
   padding:2px 8px; border-radius:4px;
   white-space:nowrap;
@@ -234,8 +266,8 @@ body.playoffs-mode-active .playoffs-badge {
   z-index:998; display:none;
   font-family:'JetBrains Mono',monospace;
 }
-#conn_banner.offline{ display:block; background:rgba(239,68,68,.1); color:#fca5a5; border-bottom:1px solid rgba(239,68,68,.3); }
-#conn_banner.online{ display:block; background:rgba(132,204,22,.08); color:#bef264; border-bottom:1px solid rgba(132,204,22,.3); }
+#conn_banner.offline{ display:block; background:rgba(var(--loss-rgb),.1); color:var(--loss-soft); border-bottom:1px solid rgba(var(--loss-rgb),.3); }
+#conn_banner.online{ display:block; background:rgba(var(--win-rgb),.08); color:var(--win-soft); border-bottom:1px solid rgba(var(--win-rgb),.3); }
 /* ============================================================
    hero
    ============================================================ */
@@ -312,7 +344,7 @@ body.playoffs-mode-active .playoffs-badge {
   justify-content:center;
 }
 .champ-panel{
-  background:linear-gradient(180deg, var(--surface) 0%, rgba(20,20,20,0) 120%);
+  background:linear-gradient(180deg, var(--surface) 0%, transparent 120%);
   border:1px solid var(--border);
   border-radius:6px;
   padding:22px 24px 24px;
@@ -378,7 +410,7 @@ body.playoffs-mode-active .playoffs-badge {
   font-family:'Anton',sans-serif;
   font-size:1.45rem;
   letter-spacing:.08em;
-  color:#fff;
+  color:var(--text);
   text-transform:uppercase;
   cursor:pointer;
   transition:color .2s ease, transform .2s ease;
@@ -386,7 +418,7 @@ body.playoffs-mode-active .playoffs-badge {
 .champ-mgr{
   font-family:'JetBrains Mono',monospace;
   font-size:0.55rem;
-  color:#fff;
+  color:var(--text-muted);
   text-transform:uppercase;
   letter-spacing:0.15em;
   margin-top:-2px;
@@ -396,7 +428,7 @@ body.playoffs-mode-active .playoffs-badge {
   font-family:'JetBrains Mono',monospace;
   font-size:.65rem;
   letter-spacing:.18em;
-  color:#fff;
+  color:var(--text-muted);
   text-transform:uppercase;
   white-space:nowrap;
   opacity:.85;
@@ -411,7 +443,7 @@ body.playoffs-mode-active .playoffs-badge {
 .champ-row.is-defending .champ-team,
 .champ-row.is-defending .champ-mgr,
 .champ-row.is-defending .champ-trophy{
-  color:#fbbf24;
+  color:var(--gold);
 }
 .champ-row.is-defending .champ-team{
   font-size:1.7rem;
@@ -434,17 +466,17 @@ body.playoffs-mode-active .playoffs-badge {
   font-family:'JetBrains Mono',monospace;
   font-size:.78rem;
   letter-spacing:.12em;
-  color:#fff;
+  color:var(--text-muted);
   font-weight:600;
   text-transform:none;
   cursor:default;
 }
 .champ-row.is-pending:hover .champ-team,
 .champ-row.is-pending:hover .champ-mgr {
-  color:#fff; transform:none;
+  color:var(--text-muted); transform:none;
 }
 .champ-row.is-pending .champ-trophy{
-  color:#fff;
+  color:var(--text-dim);
   animation:pulse-soft 2.4s ease-in-out infinite;
 }
 .champ-row.is-pending:hover .champ-trophy{
@@ -671,7 +703,7 @@ body.playoffs-mode-active .playoffs-badge {
 #stream_status .live-dot{
   width:8px; height:8px; border-radius:50%;
   background:var(--loss);
-  box-shadow:0 0 9px rgba(239,68,68,.75);
+  box-shadow:0 0 9px rgba(var(--loss-rgb),.75);
   animation:pulse-soft 1.5s ease-in-out infinite;
 }table{
   width:100%; border-collapse:collapse;
@@ -696,7 +728,7 @@ thead th:hover, .schedule-table th:hover{ color:var(--text); }
 th.active-sort, td.active-sort { color: var(--accent) !important; }
 
 @keyframes flash-column {
-  0% { background-color: rgba(255, 255, 255, 0.15); }
+  0% { background-color: rgba(var(--accent-rgb), 0.20); }
   100% { background-color: transparent; }
 }
 .flash-col {
@@ -863,7 +895,7 @@ table:has(#standings_body) thead th:nth-child(n+2):nth-child(-n+8){
 /* points-table watermark logos — faded, zoomed crop bleeding from the left */
 #standings_body tr{
   background-image:
-    linear-gradient(90deg, rgba(10,10,10,0.72) 0px, rgba(10,10,10,0.85) 56px, rgba(10,10,10,0) 140px),
+    linear-gradient(90deg, rgba(var(--bg-rgb),0.80) 0px, rgba(var(--bg-rgb),0.92) 56px, rgba(var(--bg-rgb),0) 140px),
     var(--team-logo, none);
   background-repeat: no-repeat, no-repeat;
   background-position: left center, var(--logo-x, -22px) center;
@@ -880,9 +912,9 @@ table:has(#standings_body) thead th:nth-child(n+2):nth-child(-n+8){
   transition:transform .15s;
 }
 .form-letter:hover{ transform:scale(1.25); }
-.form-letter.W{ background:rgba(132,204,22,.15); color:var(--win); border:1px solid rgba(132,204,22,.35); }
-.form-letter.L{ background:rgba(239,68,68,.15); color:#f87171; border:1px solid rgba(239,68,68,.35); }
-.form-letter.T{ background:rgba(250,204,21,.15); color:var(--tie); border:1px solid rgba(250,204,21,.35); }
+.form-letter.W{ background:rgba(var(--win-rgb),.15); color:var(--win); border:1px solid rgba(var(--win-rgb),.35); }
+.form-letter.L{ background:rgba(var(--loss-rgb),.15); color:var(--loss-soft); border:1px solid rgba(var(--loss-rgb),.35); }
+.form-letter.T{ background:rgba(var(--tie-rgb),.15); color:var(--tie); border:1px solid rgba(var(--tie-rgb),.35); }
 .form-letter.NA{ background:transparent; color:var(--text-dim); border:1px dashed var(--border-bright); }
 .form-letter.latest{ text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:2px; }
 
@@ -947,8 +979,8 @@ table:has(#standings_body) thead th:nth-child(n+2):nth-child(-n+8){
 }
 .tag-winner{
   color:var(--win);
-  border:1px solid rgba(132,204,22,.4);
-  background:rgba(132,204,22,.08);
+  border:1px solid rgba(var(--win-rgb),.4);
+  background:rgba(var(--win-rgb),.08);
   padding:2px 8px; border-radius:3px;
 }
 .feed-fixture{
@@ -1135,10 +1167,10 @@ table:has(#standings_body) thead th:nth-child(n+2):nth-child(-n+8){
   border-radius: 4px;
   transition: background 0.25s, color 0.25s, border-color 0.25s;
 }
-.status-clinched { background: rgba(132,204,22,0.1); color: var(--win); border: 1px solid rgba(132,204,22,0.3); }
-.status-bubble { background: rgba(250,204,21,0.1); color: var(--tie); border: 1px solid rgba(250,204,21,0.3); }
-.status-longshot { background: rgba(234,88,12,0.12); color: #fb923c; border: 1px solid rgba(234,88,12,0.35); }
-.status-eliminated { background: rgba(239,68,68,0.1); color: var(--loss); border: 1px solid rgba(239,68,68,0.3); }
+.status-clinched { background: rgba(var(--win-rgb),0.1); color: var(--win); border: 1px solid rgba(var(--win-rgb),0.3); }
+.status-bubble { background: rgba(var(--tie-rgb),0.1); color: var(--tie); border: 1px solid rgba(var(--tie-rgb),0.3); }
+.status-longshot { background: rgba(var(--longshot-rgb),0.12); color: var(--longshot); border: 1px solid rgba(var(--longshot-rgb),0.35); }
+.status-eliminated { background: rgba(var(--loss-rgb),0.1); color: var(--loss); border: 1px solid rgba(var(--loss-rgb),0.3); }
 
 /* Integrate status pill cleanly into the manager-card hover state */
 .manager-card:hover .scenario-status {
@@ -1221,7 +1253,7 @@ input:focus, select:focus{
 button{
   padding:11px 18px;
   background:var(--accent);
-  color:#000;
+  color:var(--bg);
   border:1px solid var(--accent);
   border-radius:4px;
   font-family:'Manrope',sans-serif;
@@ -1241,10 +1273,10 @@ button.ghost{
 button.ghost:hover{ background:rgba(var(--accent-rgb),.1); box-shadow:none; }
 button.danger{
   background:transparent;
-  color:#f87171;
-  border-color:#7f1d1d;
+  color:var(--loss-soft);
+  border-color:var(--loss);
 }
-button.danger:hover{ background:rgba(239,68,68,.1); }
+button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
 
 .checkbox-row{
   display:flex; align-items:center; gap:8px;
@@ -1292,7 +1324,7 @@ button.danger:hover{ background:rgba(239,68,68,.1); }
   font-size:.72rem; font-weight:700;
   letter-spacing:.14em; text-transform:uppercase;
   cursor:pointer;
-  box-shadow:0 6px 20px rgba(0,0,0,.4);
+  box-shadow:0 6px 20px rgba(46,20,24,.16);
   transition:transform .15s, box-shadow .15s, border-color .2s, color .2s;
 }
 #clear_takeover:hover{
@@ -1314,7 +1346,7 @@ button.danger:hover{ background:rgba(239,68,68,.1); }
   border-radius:4px;
   font-size:.88rem;
   font-weight:600;
-  box-shadow:0 10px 30px rgba(0,0,0,.6);
+  box-shadow:0 10px 30px rgba(46,20,24,.22);
   opacity:0;
   transform:translateX(40px);
   animation:slideIn .35s cubic-bezier(.2,.8,.3,1) forwards;
@@ -1329,7 +1361,7 @@ button.danger:hover{ background:rgba(239,68,68,.1); }
 /* modal */
 .modal-overlay{
   display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,.85);
+  background:rgba(46,20,24,.62);
   z-index:3000;
   align-items:center; justify-content:center;
   backdrop-filter:blur(8px);
@@ -1385,9 +1417,9 @@ button.danger:hover{ background:rgba(239,68,68,.1); }
   font-size:.82rem; font-weight:700;
   flex-shrink:0;
 }
-.form-res-pill.W{ background:rgba(132,204,22,.15); color:var(--win); border:1px solid rgba(132,204,22,.4); }
-.form-res-pill.L{ background:rgba(239,68,68,.15); color:#f87171; border:1px solid rgba(239,68,68,.4); }
-.form-res-pill.T{ background:rgba(250,204,21,.15); color:var(--tie); border:1px solid rgba(250,204,21,.4); }
+.form-res-pill.W{ background:rgba(var(--win-rgb),.15); color:var(--win); border:1px solid rgba(var(--win-rgb),.4); }
+.form-res-pill.L{ background:rgba(var(--loss-rgb),.15); color:var(--loss-soft); border:1px solid rgba(var(--loss-rgb),.4); }
+.form-res-pill.T{ background:rgba(var(--tie-rgb),.15); color:var(--tie); border:1px solid rgba(var(--tie-rgb),.4); }
 
 /* ============================================================
    side watermarks — abstract tech design & stencil art
@@ -1594,7 +1626,7 @@ button.danger:hover{ background:rgba(239,68,68,.1); }
    can't escape up to .container. */
 .hero-stat-row {
   padding: 16px 18px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.03), transparent);
+  background: linear-gradient(90deg, rgba(var(--accent-rgb),0.06), transparent);
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -1706,7 +1738,7 @@ button.danger:hover{ background:rgba(239,68,68,.1); }
   font-size:1.5rem;
   letter-spacing:.06em;
   text-transform:uppercase;
-  color:#fff;
+  color:var(--text);
   line-height:1;
   margin:0 0 14px;
   transition:color .2s ease;
@@ -2004,18 +2036,17 @@ button.danger:hover{ background:rgba(239,68,68,.1); }
    PLAYOFF BRACKET GRID (2x2)
    ============================================================ */
 .bracket-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 10px; }
-/* two semis side by side, the final spanning the full width beneath them */
-.bracket-grid .p-card.gold { grid-column: 1 / -1; }
+/* row one: the two semis. row two: the third-place play-off and the final. */
 @media (max-width: 900px) { .bracket-grid { grid-template-columns: 1fr; } }
 .p-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 16px; transition: transform 0.25s ease; }
 .p-card:hover { transform: translateY(-2px); }
 .p-card.accent { border-color: rgba(var(--accent-rgb), 0.5); background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.08) 0%, transparent 60%); }
-.p-card.gold { border-color: rgba(251,191,36,0.5); background: linear-gradient(135deg, rgba(251,191,36,0.12) 0%, transparent 60%); }
+.p-card.gold { border-color: rgba(var(--gold-rgb),0.5); background: linear-gradient(135deg, rgba(var(--gold-rgb),0.12) 0%, transparent 60%); }
 .p-title { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.18em; color: var(--accent); margin-bottom: 14px; text-transform: uppercase; font-weight: 700; }
-.p-card.gold .p-title { color: #fbbf24; text-shadow: 0 0 8px rgba(251,191,36,0.4); }
+.p-card.gold .p-title { color: var(--gold); text-shadow: 0 0 8px rgba(var(--gold-rgb),0.4); }
 .p-matchup { display: flex; flex-direction: column; gap: 8px; }
 .p-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; }
-.p-card.gold .p-row { border-color: rgba(251,191,36,0.2); }
+.p-card.gold .p-row { border-color: rgba(var(--gold-rgb),0.2); }
 .p-seed { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--text-dim); width: 50px; text-transform: uppercase; letter-spacing: 0.1em; }
 .p-team { font-family: 'Anton', sans-serif; font-size: 1.15rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
 .p-card.gold .p-team { color: var(--text); }
@@ -2233,7 +2264,7 @@ button.danger:hover{ background:rgba(239,68,68,.1); }
         <h2 class="section-title" style="color:var(--accent); text-shadow: 0 0 14px rgba(var(--accent-rgb),0.6);">
           <span class="num-pre" style="color:var(--accent);">◆</span>Knockout Bracket
         </h2>
-        <div class="section-meta">road to the trophy · top four advance</div>
+        <div class="section-meta">road to the trophy · top four advance · third place decided on the field</div>
       </div>
       <div class="bracket-grid" id="bracket_grid">
         <div class="p-card accent">
@@ -2248,6 +2279,13 @@ button.danger:hover{ background:rgba(239,68,68,.1); }
           <div class="p-matchup">
             <div class="p-row"><span class="p-seed">Rank 2</span><span class="p-team" id="br_sf2_a">TBD</span></div>
             <div class="p-row"><span class="p-seed">Rank 3</span><span class="p-team" id="br_sf2_b">TBD</span></div>
+          </div>
+        </div>
+        <div class="p-card">
+          <div class="p-title" style="color:var(--text-muted);">Third Place Play-off</div>
+          <div class="p-matchup">
+            <div class="p-row"><span class="p-seed">L SF1</span><span class="p-team" id="br_3rd_a">TBD</span></div>
+            <div class="p-row"><span class="p-seed">L SF2</span><span class="p-team" id="br_3rd_b">TBD</span></div>
           </div>
         </div>
         <div class="p-card gold">
@@ -2947,6 +2985,7 @@ let SCHEDULE = [
 const PLAYOFF_SCHEDULE = [
   {id: 'Semi-Final 1', a: 'tbd', b: 'tbd', label: 'SF1 · #1 v #4'},
   {id: 'Semi-Final 2', a: 'tbd', b: 'tbd', label: 'SF2 · #2 v #3'},
+  {id: 'Third Place',  a: 'tbd', b: 'tbd', label: '3rd Place Play-off'},
   {id: 'Final',        a: 'tbd', b: 'tbd', label: 'World Cup Final'}
 ];
 // ============================== STATE ==============================
@@ -2992,6 +3031,14 @@ window.showToast = function(msg, type = 'default'){
 
 let _isPlayoffsMode = false;
 
+// strip any inline accent written onto <html> by a nation takeover, so the
+// palette falls back to whichever CSS block is in force (:root for the league
+// stage, body.playoffs-mode-active for the knockouts).
+function clearAccentOverride(){
+  ['--accent','--accent-rgb','--accent-2','--accent-2-rgb']
+    .forEach(p => document.documentElement.style.removeProperty(p));
+}
+
 window.togglePlayoffsMode = function() {
   _isPlayoffsMode = !_isPlayoffsMode;
   const oddsSec = document.getElementById('odds_section');
@@ -3003,12 +3050,11 @@ window.togglePlayoffsMode = function() {
 
   if (_isPlayoffsMode) {
     document.body.classList.add('playoffs-mode-active');
-    
-    // Switch to Electric Pastel Olive
-    document.documentElement.style.setProperty('--accent', '#b4d455');
-    document.documentElement.style.setProperty('--accent-rgb', '180, 212, 85');
-    document.documentElement.style.setProperty('--accent-2', '#8da63a');
-    document.documentElement.style.setProperty('--accent-2-rgb', '141, 166, 58');
+
+    // the inverted cream-on-crimson palette lives in CSS under
+    // `body.playoffs-mode-active`; clearing any inline takeover accent from
+    // <html> lets that block take over cleanly.
+    clearAccentOverride();
     
     // Hide standard elements, show Playoff Engine & Bracket
     if(oddsSec) oddsSec.style.display = 'none';
@@ -3049,11 +3095,8 @@ window.resetTakeover = function(){
   if(poSec) poSec.style.display = 'none';
   if(bracketView) bracketView.style.display = 'none';
 
-  // Revert to standard "Floodlight" blue theme
-  document.documentElement.style.setProperty('--accent', '#86acd8');
-  document.documentElement.style.setProperty('--accent-rgb', '134, 172, 216');
-  document.documentElement.style.setProperty('--accent-2', '#3d6fb0');
-  document.documentElement.style.setProperty('--accent-2-rgb', '61, 111, 176');
+  // fall back to the league-stage palette declared in :root
+  clearAccentOverride();
   
   selectedTeamFilter = null;
   updateUI();
@@ -3266,17 +3309,20 @@ window.takeoverTeam = function(team){
   if(poSec) poSec.style.display = 'none';
   if(bracketView) bracketView.style.display = 'none';
 
-  const hex = TEAM_COLORS[team] || '#86acd8';
-  let hex2 = TEAM_COLORS_2[team] || '#3d6fb0';
+  const hex = TEAM_COLORS[team] || '#8e1b2d';
+  let hex2 = TEAM_COLORS_2[team] || '#b8452f';
   const r = parseInt(hex.slice(1,3),16),
         g = parseInt(hex.slice(3,5),16),
         b = parseInt(hex.slice(5,7),16);
   let r2 = parseInt(hex2.slice(1,3),16),
       g2 = parseInt(hex2.slice(3,5),16),
       b2 = parseInt(hex2.slice(5,7),16);
-  // a near-black secondary (New Zealand's, say) would vanish on the dark UI — let the page's
-  // own black express it and drive the glow accents off the primary instead
-  if((0.299*r2 + 0.587*g2 + 0.114*b2) < 40){ hex2 = hex; r2 = r; g2 = g; b2 = b; }
+  // a secondary that sits too close to either end of the range disappears against
+  // the page — New Zealand's near-black on the cream league theme, Pakistan's
+  // near-white on the crimson knockout theme. In either case fall back to the
+  // primary so the glow accents still read.
+  const lum2 = 0.299*r2 + 0.587*g2 + 0.114*b2;
+  if(lum2 < 40 || lum2 > 214){ hex2 = hex; r2 = r; g2 = g; b2 = b; }
   document.documentElement.style.setProperty('--accent', hex);
   document.documentElement.style.setProperty('--accent-rgb', `${r},${g},${b}`);
   document.documentElement.style.setProperty('--accent-2', hex2);
@@ -3307,11 +3353,8 @@ window.resetTakeover = function(){
   if(poSec) poSec.style.display = 'none';
   if(bracketView) bracketView.style.display = 'none';
 
-  // 3. Revert to standard "Floodlight" blue theme
-  document.documentElement.style.setProperty('--accent', '#86acd8');
-  document.documentElement.style.setProperty('--accent-rgb', '134, 172, 216');
-  document.documentElement.style.setProperty('--accent-2', '#3d6fb0');
-  document.documentElement.style.setProperty('--accent-2-rgb', '61, 111, 176');
+  // 3. fall back to the league-stage palette declared in :root
+  clearAccentOverride();
   
   selectedTeamFilter = null;
   updateUI();
@@ -4661,6 +4704,17 @@ function renderCharts() {
 }
 
 window.updateMasterGraph = function() {
+  // pull the live theme off the page so the chart follows the league-stage and
+  // knockout palettes instead of carrying baked-in greys
+  const _cs = getComputedStyle(document.body);
+  const _tok = (n, fb) => (_cs.getPropertyValue(n) || '').trim() || fb;
+  const C_TEXT   = _tok('--text', '#2e1418');
+  const C_MUTED  = _tok('--text-muted', '#6f5a52');
+  const C_DIM    = _tok('--text-dim', '#9c877b');
+  const C_SURF   = _tok('--surface', '#fdf7ee');
+  const C_BORDER = _tok('--border-bright', '#c8b295');
+  const C_GRID   = 'rgba(' + _tok('--accent-rgb', '142, 27, 45') + ', 0.18)';
+
   const hist = computeChartHistory();
   const datasets = [];
   const activeStats = Object.keys(window.graphState.stats).filter(k => window.graphState.stats[k]);
@@ -4695,18 +4749,18 @@ window.updateMasterGraph = function() {
   });
 
   const scales = {
-    x: { ticks: { color: '#737373', font: { family: 'JetBrains Mono', size: 10 } }, grid: { color: 'rgba(56,56,56,.2)' } }
+    x: { ticks: { color: C_DIM, font: { family: 'JetBrains Mono', size: 10 } }, grid: { color: C_GRID } }
   };
 
   // dynamically attach y-axes based on checked stats so scales don't distort each other
-  if (window.graphState.stats.pos) scales['y-pos'] = { type: 'linear', position: 'left', reverse: true, min: 1, max: 10, title: { display: true, text: 'Position', color: '#a3a3a3' }, grid: { color: 'rgba(56,56,56,.1)' }, ticks: { color: '#a3a3a3', stepSize: 1 } };
-  if (window.graphState.stats.pts) scales['y-pts'] = { type: 'linear', position: 'right', min: 0, title: { display: true, text: 'Points', color: '#a3a3a3' }, grid: { color: 'rgba(56,56,56,.1)' }, ticks: { color: '#a3a3a3' } };
-  if (window.graphState.stats.runs) scales['y-runs'] = { type: 'linear', position: 'left', title: { display: true, text: 'Runs', color: '#a3a3a3' }, grid: { display: false }, ticks: { color: '#a3a3a3' } };
-  if (window.graphState.stats.wkts) scales['y-wkts'] = { type: 'linear', position: 'right', title: { display: true, text: 'Wickets', color: '#a3a3a3' }, grid: { display: false }, ticks: { color: '#a3a3a3' } };
-  if (window.graphState.stats.basra) scales['y-basra'] = { type: 'linear', position: 'left', title: { display: true, text: 'BASRA', color: '#a3a3a3' }, grid: { display: false }, ticks: { color: '#a3a3a3' } };
-  if (window.graphState.stats.bewm) scales['y-bewm'] = { type: 'linear', position: 'right', title: { display: true, text: 'BEWM', color: '#a3a3a3' }, grid: { display: false }, ticks: { color: '#a3a3a3' } };
-  if (window.graphState.stats.eco) scales['y-eco'] = { type: 'linear', position: 'right', title: { display: true, text: 'Economy', color: '#a3a3a3' }, grid: { display: false }, ticks: { color: '#a3a3a3' } };
-  if (window.graphState.stats.sr) scales['y-sr'] = { type: 'linear', position: 'left', title: { display: true, text: 'Strike Rate', color: '#a3a3a3' }, grid: { display: false }, ticks: { color: '#a3a3a3' } };
+  if (window.graphState.stats.pos) scales['y-pos'] = { type: 'linear', position: 'left', reverse: true, min: 1, max: 10, title: { display: true, text: 'Position', color: C_MUTED }, grid: { color: C_GRID }, ticks: { color: C_MUTED, stepSize: 1 } };
+  if (window.graphState.stats.pts) scales['y-pts'] = { type: 'linear', position: 'right', min: 0, title: { display: true, text: 'Points', color: C_MUTED }, grid: { color: C_GRID }, ticks: { color: C_MUTED } };
+  if (window.graphState.stats.runs) scales['y-runs'] = { type: 'linear', position: 'left', title: { display: true, text: 'Runs', color: C_MUTED }, grid: { display: false }, ticks: { color: C_MUTED } };
+  if (window.graphState.stats.wkts) scales['y-wkts'] = { type: 'linear', position: 'right', title: { display: true, text: 'Wickets', color: C_MUTED }, grid: { display: false }, ticks: { color: C_MUTED } };
+  if (window.graphState.stats.basra) scales['y-basra'] = { type: 'linear', position: 'left', title: { display: true, text: 'BASRA', color: C_MUTED }, grid: { display: false }, ticks: { color: C_MUTED } };
+  if (window.graphState.stats.bewm) scales['y-bewm'] = { type: 'linear', position: 'right', title: { display: true, text: 'BEWM', color: C_MUTED }, grid: { display: false }, ticks: { color: C_MUTED } };
+  if (window.graphState.stats.eco) scales['y-eco'] = { type: 'linear', position: 'right', title: { display: true, text: 'Economy', color: C_MUTED }, grid: { display: false }, ticks: { color: C_MUTED } };
+  if (window.graphState.stats.sr) scales['y-sr'] = { type: 'linear', position: 'left', title: { display: true, text: 'Strike Rate', color: C_MUTED }, grid: { display: false }, ticks: { color: C_MUTED } };
   const ctx = document.getElementById('masterChart');
   if (!ctx) return;
   if (window.masterChartInstance) window.masterChartInstance.destroy();
@@ -4724,8 +4778,8 @@ window.updateMasterGraph = function() {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: '#141414', titleColor: '#f5f5f4', bodyColor: '#a3a3a3',
-          borderColor: '#383838', borderWidth: 1, padding: 10,
+          backgroundColor: C_SURF, titleColor: C_TEXT, bodyColor: C_MUTED,
+          borderColor: C_BORDER, borderWidth: 1, padding: 10,
           titleFont: { family: 'JetBrains Mono', size: 11, weight: '700' },
           bodyFont: { family: 'JetBrains Mono', size: 11 },
           callbacks: {
@@ -5007,7 +5061,7 @@ window.openCompare = function(){
 
   // stylized crest — team code glowing in the team's colour (no logo files exist on the site)
   const badge = t => {
-    const c1 = TEAM_COLORS[t] || '#86acd8';
+    const c1 = TEAM_COLORS[t] || 'var(--accent)';
     return `
       <div style="display:flex; flex-direction:column; align-items:center; gap:10px; flex:1; min-width:120px;">
         <div style="width:108px; height:108px; border-radius:50%; display:flex; align-items:center; justify-content:center;
@@ -5096,7 +5150,7 @@ function renderH2HMatrix(){
 
   const summary = `<div style="font-family:'JetBrains Mono',monospace; font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:14px;">`
     + `how <span style="color:${TEAM_COLORS[sel]}; font-weight:700;">${sel.toUpperCase()}</span> stacks up · all-time · `
-    + `<span style="color:var(--win);">leads ${leads}</span> · <span style="color:#f87171;">trails ${trails}</span> · <span style="color:var(--text-muted);">level ${level}</span>`
+    + `<span style="color:var(--win);">leads ${leads}</span> · <span style="color:var(--loss-soft);">trails ${trails}</span> · <span style="color:var(--text-muted);">level ${level}</span>`
     + `</div>`;
 
   const rows = recs.map(r => {
@@ -5106,7 +5160,7 @@ function renderH2HMatrix(){
     let verdict, vColor;
     if(total === 0){ verdict = 'not met'; vColor = 'var(--text-dim)'; }
     else if(r.w > r.l){ verdict = 'leads'; vColor = 'var(--win)'; }
-    else if(r.l > r.w){ verdict = 'trails'; vColor = '#f87171'; }
+    else if(r.l > r.w){ verdict = 'trails'; vColor = 'var(--loss-soft)'; }
     else { verdict = 'level'; vColor = 'var(--text-muted)'; }
     const tally = total === 0 ? '—' : `${r.w}–${r.l}`;
     return `
@@ -5215,7 +5269,7 @@ function renderManagerH2HMatrix(){
   const selColor = mgrColor(sel);
   const summary = `<div style="font-family:'JetBrains Mono',monospace; font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:14px;">`
     + `how <span style="color:${selColor}; font-weight:700;">${mgrDisplayName(sel).toUpperCase()}</span> stacks up · all-time · `
-    + `<span style="color:var(--win);">leads ${leads}</span> · <span style="color:#f87171;">trails ${trails}</span> · <span style="color:var(--text-muted);">level ${level}</span></div>`;
+    + `<span style="color:var(--win);">leads ${leads}</span> · <span style="color:var(--loss-soft);">trails ${trails}</span> · <span style="color:var(--text-muted);">level ${level}</span></div>`;
 
   const rows = recs.map(r => {
     const total = r.games;
@@ -5224,7 +5278,7 @@ function renderManagerH2HMatrix(){
     let verdict, vColor;
     if(total === 0){ verdict = 'not met'; vColor = 'var(--text-dim)'; }
     else if(r.w > r.l){ verdict = 'leads'; vColor = 'var(--win)'; }
-    else if(r.l > r.w){ verdict = 'trails'; vColor = '#f87171'; }
+    else if(r.l > r.w){ verdict = 'trails'; vColor = 'var(--loss-soft)'; }
     else { verdict = 'level'; vColor = 'var(--text-muted)'; }
     const tally = total === 0 ? '—' : `${r.w}–${r.l}`;
     const oppColor = mgrColor(r.opp);
@@ -6205,9 +6259,18 @@ function renderBracket(){
   paint('br_sf2_a', seed(1), 'TBD');
   paint('br_sf2_b', seed(2), 'TBD');
 
+  // a semi-final's winner goes to the final, its loser to the third-place play-off.
+  // a tie has no loser to promote, so both sides stay TBD until it is resolved.
   const sfWinner = id => { const r = results[id]; return r ? getWinner(r) : null; };
+  const sfLoser  = id => {
+    const r = results[id]; if(!r) return null;
+    const w = getWinner(r); if(!w) return null;
+    return (w === r.t1) ? r.t2 : r.t1;
+  };
   paint('br_fin_a', sfWinner('Semi-Final 1'), 'W SF1');
   paint('br_fin_b', sfWinner('Semi-Final 2'), 'W SF2');
+  paint('br_3rd_a', sfLoser('Semi-Final 1'), 'L SF1');
+  paint('br_3rd_b', sfLoser('Semi-Final 2'), 'L SF2');
 }
 
 // ============================== TEAM FORM MODAL (DRILL-DOWN) ==============================
@@ -6374,7 +6437,7 @@ window.openScorecard = function(matchId){
     <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px; background:var(--surface-2); border:1px solid var(--border); border-left:3px solid ${color}; border-radius:4px;">
       <div style="display:flex; align-items:center; gap:10px;">
         <span style="font-family:'Anton',sans-serif; font-size:1.3rem; letter-spacing:.06em; color:${color};">${team.toUpperCase()}</span>
-        ${isWinner ? `<span style="font-family:'JetBrains Mono',monospace; font-size:.58rem; letter-spacing:.14em; text-transform:uppercase; color:var(--win); border:1px solid rgba(132,204,22,.4); background:rgba(132,204,22,.08); padding:2px 6px; border-radius:3px;">winner</span>` : ''}
+        ${isWinner ? `<span style="font-family:'JetBrains Mono',monospace; font-size:.58rem; letter-spacing:.14em; text-transform:uppercase; color:var(--win); border:1px solid rgba(var(--win-rgb),.4); background:rgba(var(--win-rgb),.08); padding:2px 6px; border-radius:3px;">winner</span>` : ''}
       </div>
       <div style="font-family:'JetBrains Mono',monospace; font-size:1.05rem; font-weight:700; color:var(--text);">
         ${runs}/${wkts} <span style="color:var(--text-dim); font-size:.8rem; font-weight:400;">(${fmtOvers(balls)} ov)</span>
@@ -6788,7 +6851,8 @@ window.bankSeason1 = function(){
   const vault = '// ===== S1 CAREER-VAULT ENTRIES — generated ' + new Date().toISOString().slice(0,10) + ' =====\n'
     + '// drop each line into the matching manager array inside SEASON_OUTCOMES.\n'
     + '// league W / M is final; change the outcome for the four knockout sides before committing:\n'
-    + '//   champion (won the cup) · finalist (lost the final) · qualifier (lost a semi) · group\n\n'
+    + '//   champion (won the cup) · finalist (lost the final) · qualifier (won the third-place play-off)\n'
+    + '//   eliminator (lost the third-place play-off) · group (missed the semis)\n\n'
     + lines.join('\n');
 
   // ----- part 2 · fold this season's head-to-head into HISTORICAL_H2H -----
