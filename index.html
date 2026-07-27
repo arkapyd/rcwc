@@ -2747,9 +2747,9 @@ try {
    code is the key everywhere else in the file, and also the crest filename:
    code 'ind' looks for ind.png next to this file).
    ============================================================================ */
-const TEAMS = ['ind','pak','sa','nz','sl','aus','eng','wi','ban','afg'];
-const GROUP_A = ['ind','pak','sa','nz','sl'];
-const GROUP_B = ['aus','eng','wi','ban','afg'];
+const TEAMS = ['ind','eng','sa','wi','afg','aus','pak','nz','sl','ban'];
+const GROUP_A = ['ind','eng','sa','wi','afg'];
+const GROUP_B = ['aus','pak','nz','sl','ban'];
 
 // primary colour — drives the takeover theme, crest glow and chart lines
 const TEAM_COLORS = {
@@ -2777,16 +2777,18 @@ const OVERS_PER_INNINGS = 5;
    whatever you type below is exactly what the site shows.
    ============================================================================ */
 let MANAGERS = {
+  // — group A —
   ind: 'Manager 1',
-  pak: 'Manager 2',
+  eng: 'Manager 2',
   sa:  'Manager 3',
-  nz:  'Manager 4',
-  sl:  'Manager 5',
+  wi:  'Manager 4',
+  afg: 'Manager 5',
+  // — group B —
   aus: 'Manager 6',
-  eng: 'Manager 7',
-  wi:  'Manager 8',
-  ban: 'Manager 9',
-  afg: 'Manager 10'
+  pak: 'Manager 7',
+  nz:  'Manager 8',
+  sl:  'Manager 9',
+  ban: 'Manager 10'
 };
 const DEFAULT_MANAGERS = { ...MANAGERS };
 
@@ -2860,35 +2862,44 @@ function computeManagerIndex(history, liveData = null){
 }
 
 // ============================== HISTORICAL BASELINE (S1–S3) ==============================
-// 70-match schedule
+/* ============================================================================
+   SCHEDULE — 70 group fixtures, generated against these constraints:
+     · every side plays 14 matches
+     · group rivals meet ONCE          (4 matches)   → 20 fixtures
+     · opposite-group sides meet TWICE (10 matches)  → 50 fixtures
+     · the two meetings of any pair sit at least 20 matches apart
+       (this run: minimum 23)
+     · no side plays again inside 3 fixtures of its own previous game
+   Editing by hand risks breaking those guarantees — the admin panel's Match
+   Swap and Data Integrity Audit are the safe way to shuffle things.
+   ============================================================================ */
 let SCHEDULE = [
-  {id:'M01', a:'aus', b:'wi'}, {id:'M02', a:'eng', b:'ban'}, {id:'M03', a:'afg', b:'sa'},
-  {id:'M04', a:'ind',  b:'nz'},{id:'M05', a:'pak', b:'sl'}, {id:'M06', a:'aus', b:'ban'},
-  {id:'M07', a:'eng', b:'wi'}, {id:'M08', a:'sa',  b:'afg'},{id:'M09', a:'ind',  b:'sl'},
-  {id:'M10', a:'pak', b:'nz'},{id:'M11', a:'wi', b:'ban'},{id:'M12', a:'aus', b:'eng'},
-  {id:'M13', a:'afg', b:'ind'}, {id:'M14', a:'sa',  b:'sl'}, {id:'M15', a:'ban', b:'pak'},
-  {id:'M16', a:'wi',  b:'nz'},{id:'M17', a:'aus',b:'ind'}, {id:'M18', a:'eng', b:'afg'},
-  {id:'M19', a:'sa',  b:'ban'},{id:'M20', a:'nz',b:'sl'}, {id:'M21', a:'wi',  b:'pak'},
-  {id:'M22', a:'ind',  b:'aus'},{id:'M23', a:'eng', b:'sa'},{id:'M24', a:'ban', b:'afg'},
-  {id:'M25', a:'wi',  b:'sl'}, {id:'M26', a:'nz',b:'aus'},{id:'M27', a:'ind',  b:'pak'},
-  {id:'M28', a:'sa',  b:'eng'},{id:'M29', a:'ban', b:'sl'},{id:'M30', a:'wi',  b:'afg'},
-  {id:'M31', a:'aus', b:'nz'},{id:'M32', a:'pak',b:'sa'},{id:'M33', a:'ind',  b:'eng'},
-  {id:'M34', a:'sl',  b:'ban'},{id:'M35', a:'aus', b:'afg'},{id:'M36', a:'nz',b:'wi'},
-  {id:'M37', a:'pak', b:'eng'},{id:'M38', a:'ind', b:'sa'},{id:'M39', a:'sl',  b:'afg'},
-  {id:'M40', a:'ban', b:'nz'},{id:'M41', a:'pak',b:'aus'},{id:'M42', a:'wi',  b:'ind'},
-  {id:'M43', a:'eng', b:'sl'},{id:'M44', a:'sa', b:'nz'},{id:'M45', a:'afg', b:'pak'},
-  {id:'M46', a:'ind',  b:'ban'},{id:'M47', a:'sl', b:'aus'},{id:'M48', a:'sa',  b:'wi'},
-  {id:'M49', a:'nz',b:'eng'},{id:'M50', a:'pak',b:'afg'},{id:'M51', a:'ban', b:'ind'},
-  {id:'M52', a:'aus', b:'sl'},{id:'M53', a:'wi', b:'sa'},{id:'M54', a:'eng', b:'nz'},
-  {id:'M55', a:'ind',  b:'afg'},{id:'M56', a:'pak',b:'ban'},{id:'M57', a:'aus', b:'sa'},
-  {id:'M58', a:'sl',  b:'wi'},{id:'M59', a:'eng',b:'ind'},{id:'M60', a:'afg', b:'nz'},
-  {id:'M61', a:'aus', b:'pak'},{id:'M62', a:'ban',b:'sa'},{id:'M63', a:'sl',  b:'eng'},
-  {id:'M64', a:'ind',  b:'wi'}, {id:'M65', a:'nz',b:'afg'},{id:'M66', a:'sa', b:'aus'},
-  {id:'M67', a:'eng', b:'pak'},{id:'M68', a:'nz',b:'ban'},{id:'M69', a:'afg',b:'sl'},
-  {id:'M70', a:'pak', b:'wi'}
+  {id:'M01', a:'ind', b:'pak'}, {id:'M02', a:'eng', b:'ban'}, {id:'M03', a:'wi', b:'sl'},
+  {id:'M04', a:'afg', b:'aus'}, {id:'M05', a:'sa', b:'nz'}, {id:'M06', a:'eng', b:'pak'},
+  {id:'M07', a:'ind', b:'ban'}, {id:'M08', a:'wi', b:'aus'}, {id:'M09', a:'afg', b:'sl'},
+  {id:'M10', a:'eng', b:'sa'}, {id:'M11', a:'pak', b:'nz'}, {id:'M12', a:'wi', b:'ban'},
+  {id:'M13', a:'ind', b:'aus'}, {id:'M14', a:'eng', b:'sl'}, {id:'M15', a:'sa', b:'afg'},
+  {id:'M16', a:'nz', b:'ban'}, {id:'M17', a:'wi', b:'pak'}, {id:'M18', a:'eng', b:'aus'},
+  {id:'M19', a:'ind', b:'sl'}, {id:'M20', a:'sa', b:'ban'}, {id:'M21', a:'afg', b:'nz'},
+  {id:'M22', a:'eng', b:'wi'}, {id:'M23', a:'aus', b:'pak'}, {id:'M24', a:'ind', b:'sa'},
+  {id:'M25', a:'sl', b:'ban'}, {id:'M26', a:'eng', b:'nz'}, {id:'M27', a:'wi', b:'afg'},
+  {id:'M28', a:'sa', b:'aus'}, {id:'M29', a:'ind', b:'pak'}, {id:'M30', a:'nz', b:'sl'},
+  {id:'M31', a:'eng', b:'ban'}, {id:'M32', a:'sa', b:'wi'}, {id:'M33', a:'afg', b:'aus'},
+  {id:'M34', a:'pak', b:'sl'}, {id:'M35', a:'ind', b:'nz'}, {id:'M36', a:'wi', b:'ban'},
+  {id:'M37', a:'eng', b:'afg'}, {id:'M38', a:'sa', b:'pak'}, {id:'M39', a:'aus', b:'sl'},
+  {id:'M40', a:'ind', b:'ban'}, {id:'M41', a:'wi', b:'nz'}, {id:'M42', a:'afg', b:'pak'},
+  {id:'M43', a:'sa', b:'sl'}, {id:'M44', a:'eng', b:'aus'}, {id:'M45', a:'ind', b:'wi'},
+  {id:'M46', a:'afg', b:'ban'}, {id:'M47', a:'sa', b:'nz'}, {id:'M48', a:'eng', b:'sl'},
+  {id:'M49', a:'wi', b:'aus'}, {id:'M50', a:'ind', b:'afg'}, {id:'M51', a:'pak', b:'ban'},
+  {id:'M52', a:'eng', b:'nz'}, {id:'M53', a:'wi', b:'sl'}, {id:'M54', a:'sa', b:'aus'},
+  {id:'M55', a:'afg', b:'nz'}, {id:'M56', a:'eng', b:'pak'}, {id:'M57', a:'ind', b:'sl'},
+  {id:'M58', a:'aus', b:'ban'}, {id:'M59', a:'wi', b:'pak'}, {id:'M60', a:'ind', b:'nz'},
+  {id:'M61', a:'afg', b:'sl'}, {id:'M62', a:'sa', b:'ban'}, {id:'M63', a:'ind', b:'aus'},
+  {id:'M64', a:'wi', b:'nz'}, {id:'M65', a:'afg', b:'pak'}, {id:'M66', a:'sa', b:'sl'},
+  {id:'M67', a:'ind', b:'eng'}, {id:'M68', a:'aus', b:'nz'}, {id:'M69', a:'afg', b:'ban'},
+  {id:'M70', a:'sa', b:'pak'}
 ];
 
-// knockouts — top four from the group stage. 1v4 and 2v3, winners meet in the final.
 const PLAYOFF_SCHEDULE = [
   {id: 'Semi-Final 1', a: 'tbd', b: 'tbd', label: 'SF1 · #1 v #4'},
   {id: 'Semi-Final 2', a: 'tbd', b: 'tbd', label: 'SF2 · #2 v #3'},
