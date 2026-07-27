@@ -1126,27 +1126,58 @@ table:has(#standings_body) thead th:nth-child(n+2):nth-child(-n+8){
   cursor:default;
 }
 
-/* odds grid */
-.odds-grid{
-  display:grid; grid-template-columns:repeat(4, 1fr); gap:14px;
-}
-@media (max-width:1100px){
-  .odds-grid{ grid-template-columns:repeat(2, 1fr); }
-}
-@media (max-width:700px){
-  .odds-grid{ grid-template-columns:1fr; }
-}
-.odd-card{
+/* odds — head-to-head win-probability bar */
+.odds-panel{
   background:var(--surface);
   border:1px solid var(--border);
   border-radius:6px;
-  padding:16px;
-  transition:border-color .25s, transform .25s;
+  padding:20px 24px 22px;
 }
-.odd-card:hover{ border-color:var(--border-bright); transform:translateY(-2px); }
-.odd-card-teams{ display:flex; justify-content:space-between; align-items:center; font-family:'Anton',sans-serif; font-size:1.15rem; letter-spacing:0.05em; }
-.odd-val{ text-align:center; font-size:2.2rem; font-family:'Anton',sans-serif; color:var(--text); margin:10px 0; line-height:1; white-space:nowrap; }
-.odd-fav{ text-align:center; font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.1em; }
+.odds-pick{
+  display:flex; align-items:center; gap:12px;
+  flex-wrap:wrap;
+  padding-bottom:18px; margin-bottom:20px;
+  border-bottom:1px dashed var(--border-bright);
+}
+.odds-pick label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--text-dim); margin:0;
+}
+.odds-pick select{ flex:1; min-width:230px; max-width:420px; margin:0; }
+.odds-head{
+  display:flex; justify-content:space-between; align-items:flex-end;
+  gap:14px; margin-bottom:11px;
+}
+.odds-side{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+.odds-side.b{ text-align:right; align-items:flex-end; }
+.odds-side .name{
+  font-family:'Anton',sans-serif; font-size:1.3rem; letter-spacing:.05em;
+  text-transform:uppercase; cursor:pointer;
+  color:var(--team-glow, var(--text));
+  transition:filter .2s ease;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;
+}
+.odds-side .name:hover{ filter:brightness(1.25); }
+.odds-side .pct{
+  font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums;
+  font-size:1.85rem; font-weight:700; line-height:1;
+  color:var(--team-glow, var(--text));
+}
+.odds-track{
+  display:flex; height:26px;
+  border:1px solid var(--border-bright); border-radius:5px;
+  overflow:hidden; background:var(--surface-2);
+}
+.odds-fill{ height:100%; transition:width .55s cubic-bezier(.4,0,.2,1); }
+.odds-fill.a{ border-right:2px solid var(--surface); }
+.odds-verdict{
+  margin-top:13px; text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.68rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--text-dim);
+}
+.odds-verdict strong{ color:var(--text-muted); font-weight:700; }
 
 /* playoff scenarios grid (matches manager grid structure) */
 .playoff-grid {
@@ -1939,38 +1970,6 @@ button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
   line-height:1.6;
 }
 .mgr-modal-foot strong{ color:var(--accent); font-weight:700; }
-/* ============================================================
-   betting ledger (admin)
-   ============================================================ */
-.bet-entry-block{ margin-bottom:10px; }
-.bet-grid-row{
-  display:grid;
-  grid-template-columns:150px 1.2fr 90px 90px;
-  gap:10px;
-  align-items:end;
-  margin-bottom:0;
-}
-.bet-grid-row .mgr-pick-name{
-  font-weight:700;
-  text-transform:uppercase;
-  font-size:.9rem;
-  padding-bottom:9px;
-}
-.bet-outcome{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.76rem;
-  color:var(--text-muted);
-  padding:7px 2px 11px;
-  border-bottom:1px dashed var(--border);
-}
-.bet-outcome strong{ color:var(--text); }
-.bet-outcome .bet-out-empty{ color:var(--text-dim); font-style:italic; }
-.bet-pnl{ font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums; }
-.bet-pnl.pos{ color:var(--win); }
-.bet-pnl.neg{ color:var(--loss); }
-.bet-pnl.zero{ color:var(--text-muted); }@media (max-width:700px){
-  .bet-grid-row{ grid-template-columns:1fr 1fr; }
-}
    /* ============================================================
    fairplay (FP)
    ============================================================ */
@@ -2484,13 +2483,18 @@ button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
       <div style="display:flex; justify-content:space-between; width:100%; align-items:baseline;">
         <h2 class="section-title" style="display:flex; align-items:center; gap:10px;">
           <span><span class="num-pre">07</span>Predictive Odds</span>
-          <span onclick="document.getElementById('ledger_modal').classList.add('show')" style="cursor:pointer; color:var(--text-dim); font-size:.7rem; font-family:'JetBrains Mono', monospace; font-weight:normal; letter-spacing:.15em; border:1px solid var(--border-bright); padding:2px 8px; border-radius:3px; transition:color .2s, border-color .2s;" onmouseover="this.style.color='var(--accent)'; this.style.borderColor='var(--accent)';" onmouseout="this.style.color='var(--text-dim)'; this.style.borderColor='var(--border-bright)';">LEDGER</span>
-          <span onclick="document.getElementById('odds_info_modal').classList.add('show')" style="cursor:pointer; color:var(--text-dim); font-size:1.1rem; font-family:'JetBrains Mono', monospace; font-weight:normal; transition:color .2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-dim)'">ⓘ</span>
+          <span onclick="document.getElementById('odds_info_modal').classList.add('show')" style="cursor:pointer; color:var(--text-dim); font-size:1.1rem; font-family:'JetBrains Mono', monospace; font-weight:normal; transition:color .2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-dim)'">&#9432;</span>
         </h2>
-        <div class="section-meta">upcoming fixtures · weighted by form & head-to-head</div>
+        <div class="section-meta">win probability &middot; weighted by form &amp; head-to-head</div>
       </div>
     </div>
-    <div class="odds-grid" id="odds_feed"></div>
+    <div class="odds-panel">
+      <div class="odds-pick">
+        <label for="odds_fixture">Fixture</label>
+        <select id="odds_fixture" onchange="window.selectOddsFixture(this.value)"></select>
+      </div>
+      <div id="odds_feed"></div>
+    </div>
   </section>
 
   <section class="section" id="playoffs_section" style="display:none;">
@@ -2635,49 +2639,6 @@ button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
         </div>
       </div>
     </div>
-   <div class="admin-section">
-      <h3>Betting Ledger</h3>
-      <div class="admin-status">// admin-only. just pick a side &amp; stake — the <span class="accent">odds auto-fill</span> from the section 07 predictive engine (decimal: 2.00 = evens; a win pays stake × (odds − 1), a loss costs the stake). the odds field stays editable to override, and locks in when you save. each bet settles automatically once the match has a result in the log.</div>
-
-      <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
-        <button class="tab-btn active" id="bettab_entry_btn" onclick="window.switchBetTab('entry')">Enter Bets</button>
-        <button class="tab-btn" id="bettab_ledger_btn" onclick="window.switchBetTab('ledger')">Ledger / Standings</button>
-      </div>
-
-      <div id="bettab_entry">
-        <div class="row">
-          <div style="flex:2;">
-            <label>Select Fixture</label>
-            <select id="bet_fixture_select" onchange="window.loadBetFixture()"></select>
-          </div>
-        </div>
-        <div class="admin-status" id="bet_fixture_status">// pick a fixture to record bets</div>
-        <div id="bet_entry_rows"></div>
-        <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
-          <button onclick="window.saveBets()">Save Bets</button>
-          <button class="danger" onclick="window.clearBetsForMatch()">Clear Bets For This Match</button>
-        </div>
-      </div>
-
-      <div id="bettab_ledger" style="display:none;">
-        <div class="table-wrap" style="overflow-x:auto;">
-          <table style="width:100%; min-width:680px; border-collapse:collapse; font-size:.85rem;">
-            <thead>
-              <tr>
-                <th style="text-align:left; padding-left:18px;">Manager</th>
-                <th>Team</th>
-                <th class="num">Bets</th>
-                <th class="num">Settled</th>
-                <th class="num">Staked</th>
-                <th class="num" style="color:var(--win);">Net P/L (V$)</th>
-              </tr>
-            </thead>
-            <tbody id="bet_ledger_body"></tbody>
-          </table>
-        </div>
-        <div class="admin-status" id="bet_ledger_meta" style="margin-top:12px;">// no bets recorded yet</div>
-      </div>
-    </div>
      <div class="admin-section">
       <h3>Data &amp; Backups</h3>
       <div class="admin-status">// download a JSON snapshot of every result — keep it as your archival dataset for future seasons.</div>
@@ -2759,37 +2720,6 @@ button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
   </div>
 </div>
 
-<div id="ledger_modal" class="modal-overlay">
-  <div class="modal-content" style="max-width:720px; width:95%;">
-    <span class="modal-close" onclick="document.getElementById('ledger_modal').classList.remove('show')">&times;</span>
-    <h2 class="modal-title">Betting Ledger</h2>
-    <div class="modal-subtitle" id="public_ledger_meta">// no bets recorded yet</div>
-    <div class="table-wrap" style="overflow-x:auto; margin-top:14px;">
-      <table style="width:100%; min-width:600px; border-collapse:collapse; font-size:.85rem;">
-        <thead>
-          <tr>
-            <th style="text-align:left; padding-left:18px;">Manager</th>
-            <th>Team</th>
-            <th class="num">Bets</th>
-            <th class="num">Settled</th>
-            <th class="num">Staked</th>
-            <th class="num" style="color:var(--win);">Net P/L (V$)</th>
-          </tr>
-        </thead>
-        <tbody id="public_ledger_body"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<div id="manager_bet_modal" class="modal-overlay">
-  <div class="modal-content" style="max-width:620px; width:95%;">
-    <span class="modal-close" onclick="document.getElementById('manager_bet_modal').classList.remove('show')">&times;</span>
-    <h2 class="modal-title" id="manager_bet_title">—</h2>
-    <div class="modal-subtitle">// comprehensive betting history</div>
-    <div id="manager_bet_body" style="margin-top:16px; max-height:60vh; overflow-y:auto; padding-right:8px;"></div>
-  </div>
-</div>
 <div id="scenario_modal" class="modal-overlay">
   <div class="modal-content mgr-modal">
     <span class="modal-close" onclick="document.getElementById('scenario_modal').classList.remove('show')">&times;</span>
@@ -2801,12 +2731,13 @@ button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
 <div id="odds_info_modal" class="modal-overlay">
   <div class="modal-content">
     <span class="modal-close" onclick="document.getElementById('odds_info_modal').classList.remove('show')">&times;</span>
-    <h2 class="modal-title">Odds & Bets Explained</h2>
+    <h2 class="modal-title">Predictive Odds Explained</h2>
     <div class="modal-subtitle">// how the predictive engine works</div>
     <!-- AFTER -->
     <div style="font-size:.88rem; color:var(--text-muted); line-height:1.6;">
-      <p><strong style="color:var(--accent);">strength:</strong> head-to-head 45% (90% manager rivalry · 10% nation rivalry, all banked seasons + live S1) · present form 55% (BASRA, BEWM & current win/loss-streak confidence). the two teams' strengths form a ratio mapped to fractional odds.</p>
-      <p><strong style="color:var(--accent);">payouts:</strong> favourite profit = stake ÷ odds · underdog profit = stake × odds · a loss forfeits the whole stake.</p>
+      <p><strong style="color:var(--accent);">strength:</strong> head-to-head 45% (90% manager rivalry · 10% nation rivalry, all banked seasons + live S1) · present form 55% (BASRA, BEWM & current win/loss-streak confidence). the two nations' strengths are then compared head-to-head.</p>
+      <p><strong style="color:var(--accent);">the bar:</strong> the two strengths are normalised against each other and drawn as a single 100% line — each nation's share painted in its own primary colour. A 50/50 split means the engine can't separate them.</p>
+      <p><strong style="color:var(--accent);">reading it:</strong> this is a projection from results so far, not a market. Early in the season, with little form banked, most fixtures will sit close to even.</p>
       <p style="margin-top:12px; font-style:italic; font-size:.8rem; color:var(--text-dim);">predictive & entertainment only.</p>
     </div>
   </div>
@@ -2864,7 +2795,7 @@ const OVERS_PER_INNINGS = 5;
    MANAGERS — edit me.
    One manager per nation. Change a name here and it flows through the whole
    site: the Team Managers cards, Most Valuable Manager, manager head-to-head,
-   the betting ledger and the odds engine's rivalry weighting.
+   and the odds engine's rivalry weighting.
    These are the fallback seed. The admin panel's roster editor can override
    them live (and syncs that to Firebase); until someone saves a roster there,
    whatever you type below is exactly what the site shows.
@@ -2991,16 +2922,18 @@ const PLAYOFF_SCHEDULE = [
 // ============================== STATE ==============================
 let results = {};
 let fairplay = {};
-let bets = {};
 let stream = { live:false, channel:'', platform:'twitch' };
 let currentFilter = 'all';
+// which of the upcoming fixtures the odds panel is showing. null = the next match.
+// declared up here with the rest of the state so the local-only boot path (which
+// calls updateUI synchronously) can never reach it before initialisation.
+let _oddsFixture = null;
 let selectedTeamFilter = null;
 let isUiInitialized = false;
 window.currentStandings = [];
 
 const LS_KEY = 'rcwc_s1_cache_v1';
 const LS_ROSTER = 'rcwc_s1_roster_v1';
-const LS_BETS = 'rcwc_s1_bets_v1';
 let _bootDone = false, _cloudConnected = false;
 const saveLocal = () => { try { localStorage.setItem(LS_KEY, JSON.stringify(results)); } catch(e){} };
 const loadLocal = () => { try { const r = localStorage.getItem(LS_KEY); return r ? JSON.parse(r) : null; } catch(e){ return null; } };
@@ -3012,8 +2945,6 @@ const loadLocalSchedule = () => { try { const r = localStorage.getItem(LS_SCHEDU
 const LS_FP = 'rcwc_s1_fairplay_v1';
 const saveLocalFp = () => { try { localStorage.setItem(LS_FP, JSON.stringify(fairplay)); } catch(e){} };
 const loadLocalFp = () => { try { const r = localStorage.getItem(LS_FP); return r ? JSON.parse(r) : null; } catch(e){ return null; } };
-const saveLocalBets = () => { try { localStorage.setItem(LS_BETS, JSON.stringify(bets)); } catch(e){} };
-const loadLocalBets = () => { try { const r = localStorage.getItem(LS_BETS); return r ? JSON.parse(r) : null; } catch(e){ return null; } };
 const LS_STREAM = 'rcwc_s1_stream_v1';
 const saveLocalStream = () => { try { localStorage.setItem(LS_STREAM, JSON.stringify(stream)); } catch(e){} };
 const loadLocalStream = () => { try { const r = localStorage.getItem(LS_STREAM); return r ? JSON.parse(r) : null; } catch(e){ return null; } };
@@ -3546,24 +3477,6 @@ function pushFp(id){
   }
 }
 
-// per-match write for bets — single fixture node instead of the whole bets blob.
-function pushBets(id){
-  saveLocalBets();
-  if(!dbRef) return;
-  try {
-    const p = bets[id]
-      ? dbRef.child('bets/' + id).set(sanitize(bets[id]))
-      : dbRef.child('bets/' + id).remove();
-    if(p && p.catch) p.catch(e => {
-      console.error('bets match write failed:', e);
-      window.showToast('bets saved locally only.', 'error');
-      setConnBanner('offline');
-    });
-  } catch(e){
-    console.error('bets match write threw:', e);
-    window.showToast('bets save error — local only.', 'error');
-  }
-}
 // ============================== MANAGER ROSTER (editable + persisted) ==============================
 function titleCase(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
 
@@ -3624,20 +3537,6 @@ function cloudSaveFp(){
     if(p && p.catch) p.catch(e => { console.error('fairplay write failed:', e); window.showToast('FP saved locally only.', 'error'); });
   } catch(e){ console.error('fairplay write threw:', e); window.showToast('FP save error — local only.', 'error'); }
 }
-function applyBets(b){
-  bets = (b && typeof b === 'object') ? b : {};
-  saveLocalBets();
-}
-
-function cloudSaveBets(){
-  saveLocalBets();
-  if(!dbRef) return;
-  try {
-    const p = dbRef.update(sanitize({ bets }));
-    if(p && p.catch) p.catch(e => { console.error('bets write failed:', e); window.showToast('bets saved locally only.', 'error'); });
-  } catch(e){ console.error('bets write threw:', e); window.showToast('bets save error — local only.', 'error'); }
-}
-
 // ============================== LIVE STREAM (Twitch embed) ==============================
 function applyStream(s){
   stream = (s && typeof s === 'object')
@@ -3844,7 +3743,6 @@ const _fbTimeout = setTimeout(() => {
   window.showToast('cloud slow — loaded local data.', 'error');
   applySchedule(loadLocalSchedule());
   applyRoster(loadLocalRoster());
-  applyBets(loadLocalBets());
   applyFairplay(loadLocalFp());
   ingest(loadLocal());
 }, 5000);
@@ -3859,7 +3757,6 @@ if(dbRef){
     applySchedule(d && d.schedule);
     applyRoster(d && d.roster);
     applyFairplay(d && d.fairplay);
-    applyBets(d && d.bets);
     applyStream(d && d.stream);
     ingest(d && d.results);
   }, err => {
@@ -3870,7 +3767,6 @@ if(dbRef){
     window.showToast('cloud read failed — using local data.', 'error');
     applySchedule(loadLocalSchedule());
     applyRoster(loadLocalRoster());
-    applyBets(loadLocalBets());
     applyFairplay(loadLocalFp());
     ingest(loadLocal());
   });
@@ -3880,7 +3776,6 @@ if(dbRef){
   applySchedule(loadLocalSchedule());
   applyRoster(loadLocalRoster());
   applyFairplay(loadLocalFp());
-  applyBets(loadLocalBets());
   ingest(loadLocal());
 }
 // ============================== STANDINGS ==============================
@@ -5298,38 +5193,6 @@ function renderManagerH2HMatrix(){
 }
 
 // ============================== PREDICTIVE ODDS ==============================
-window.calcBet = function(input, odds, teamA, teamB, fav, isEvens) {
-  const resultsDiv = input.parentElement.nextElementSibling;
-  const val = parseFloat(input.value);
-  
-  if(isNaN(val) || val <= 0) {
-    resultsDiv.style.display = 'none';
-    return;
-  }
-  
-  resultsDiv.style.display = 'flex';
-  
-  let profitA = 0, profitB = 0;
-  if (isEvens) {
-    profitA = val; 
-    profitB = val;
-  } else {
-    if (teamA === fav) {
-      profitA = val / odds;
-      profitB = val * odds;
-    } else {
-      profitA = val * odds;
-      profitB = val / odds;
-    }
-  }
-  
-  resultsDiv.querySelector('.res-a-win').innerText = `+${profitA.toFixed(2)}`;
-  resultsDiv.querySelector('.res-a-loss').innerText = `-${val.toFixed(2)}`;
-  
-  resultsDiv.querySelector('.res-b-win').innerText = `+${profitB.toFixed(2)}`;
-  resultsDiv.querySelector('.res-b-loss').innerText = `-${val.toFixed(2)}`;
-};
-
 // global helper to calculate dynamic team strength (used for odds and underdog upsets)
 // model: 45% head-to-head (90% manager-vs-manager rivalry, 10% team-vs-team) +
 // 55% present form (BASRA, BEWM, and current win/loss-streak confidence). everything sits
@@ -5485,528 +5348,77 @@ window.calcTotalCareerValue = function(team) {
   // combine for the true living franchise stock price
   return legacyBaseValue + s1ValueAdded;
 };
-  function renderOdds(){
-  const upcoming = SCHEDULE.filter(f => !results[f.id]).slice(0, 4);
-  const el = document.getElementById('odds_feed');
+window.selectOddsFixture = function(id){
+  _oddsFixture = id || null;
+  renderOdds();
+};
+
+// horizontal win-probability bar for one upcoming fixture. the two nations'
+// strength scores (see calcTeamStrength) are normalised against each other, so
+// the pair always sums to 100, and each share is painted in that nation's
+// primary colour.
+function renderOdds(){
+  const sel = document.getElementById('odds_fixture');
+  const feed = document.getElementById('odds_feed');
+  if(!sel || !feed) return;
+
+  // the next ten fixtures still to be played
+  const upcoming = SCHEDULE.filter(f => !results[f.id]).slice(0, 10);
+
   if(upcoming.length === 0){
-    el.innerHTML = '<div class="feed-empty" style="grid-column:1/-1;">all fixtures completed. no upcoming odds available.</div>';
+    sel.innerHTML = '';
+    sel.disabled = true;
+    feed.innerHTML = '<div class="feed-empty">all group fixtures completed — no upcoming odds.</div>';
     return;
   }
+  sel.disabled = false;
 
-  const standardOdds = [
-     {v: 1.0, s: '1/1'}, {v: 1.1, s: '11/10'}, {v: 1.2, s: '6/5'}, {v: 1.25, s: '5/4'},
-     {v: 1.33, s: '4/3'}, {v: 1.4, s: '7/5'}, {v: 1.5, s: '3/2'}, {v: 1.6, s: '8/5'},
-     {v: 1.75, s: '7/4'}, {v: 1.8, s: '9/5'}, {v: 2.0, s: '2/1'}, {v: 2.25, s: '9/4'},
-     {v: 2.5, s: '5/2'}, {v: 2.75, s: '11/4'}, {v: 3.0, s: '3/1'}, {v: 3.5, s: '7/2'},
-     {v: 4.0, s: '4/1'}, {v: 5.0, s: '5/1'}
-  ];
+  // hold the user's pick if it is still unplayed, otherwise fall to the next match
+  const id = (_oddsFixture && upcoming.some(f => f.id === _oddsFixture)) ? _oddsFixture : upcoming[0].id;
+  _oddsFixture = id;
 
-  el.innerHTML = upcoming.map(f => {
-    let scoreA = window.calcTeamStrength(f.a, f.b);
-    let scoreB = window.calcTeamStrength(f.b, f.a);
+  sel.innerHTML = upcoming.map((f, n) =>
+    `<option value="${f.id}"${f.id === id ? ' selected' : ''}>${f.id} · ${TEAM_NAMES[f.a]} v ${TEAM_NAMES[f.b]}${n === 0 ? ' · next up' : ''}</option>`
+  ).join('');
 
-    let ratio = scoreA / scoreB;
-    let fav = f.a;
-    let underdog = f.b;
-
-    if (ratio < 1) {
-       ratio = 1 / ratio;
-       fav = f.b;
-       underdog = f.a;
-    }
-
-    if (ratio > 5.0) ratio = 5.0;
-    let closest = standardOdds.reduce((prev, curr) => Math.abs(curr.v - ratio) < Math.abs(prev.v - ratio) ? curr : prev);
-
-    let oddsStr = closest.s;
-    if(closest.v === 1.0) oddsStr = '1/1 (EVENS)';
-    let isEvens = closest.v === 1.0;
-
-    return `
-      <div class="odd-card">
-        <div class="odd-card-teams">
-          <span class="team-link" style="--team-glow:${TEAM_COLORS[f.a]};" onclick="window.takeoverTeam('${f.a}')">${f.a.toUpperCase()}</span>
-          <span style="color:var(--text-dim);font-size:0.8rem;font-family:'JetBrains Mono';">VS</span>
-          <span class="team-link" style="--team-glow:${TEAM_COLORS[f.b]};" onclick="window.takeoverTeam('${f.b}')">${f.b.toUpperCase()}</span>
-        </div>
-        <div class="odd-val">${oddsStr}</div>
-        <div class="odd-fav">${isEvens ? 'evenly matched' : `in favour of <span class="team-link" style="--team-glow:${TEAM_COLORS[fav]};" onclick="window.takeoverTeam('${fav}')">${fav.toUpperCase()}</span>`}</div>
-        
-        <div class="bet-calc" style="margin-top:16px; padding-top:16px; border-top:1px dashed var(--border-bright);">
-          <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px;">
-            <label style="margin:0; white-space:nowrap; letter-spacing:0.1em;">STAKE (V$)</label>
-            <input type="number" min="0" placeholder="amount..." class="bet-input" oninput="window.calcBet(this, ${closest.v}, '${f.a}', '${f.b}', '${fav}', ${isEvens})" style="flex:1; padding:6px 10px; font-size:.85rem; height:32px;">
-          </div>
-          <div class="bet-results" style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; display:none; flex-direction:column; gap:6px;">
-            <div style="background:var(--surface-2); padding:8px 10px; border-radius:4px; border:1px solid var(--border);">
-              <div style="color:var(--text-dim); margin-bottom:4px; font-size:.65rem; text-transform:uppercase; letter-spacing:.1em;">bet on ${f.a.toUpperCase()}</div>
-              <div style="display:flex; justify-content:space-between;">
-                <span>win: <span class="res-a-win" style="color:var(--win); font-weight:bold;"></span></span>
-                <span>loss: <span class="res-a-loss" style="color:var(--loss);"></span></span>
-              </div>
-            </div>
-            <div style="background:var(--surface-2); padding:8px 10px; border-radius:4px; border:1px solid var(--border);">
-              <div style="color:var(--text-dim); margin-bottom:4px; font-size:.65rem; text-transform:uppercase; letter-spacing:.1em;">bet on ${f.b.toUpperCase()}</div>
-              <div style="display:flex; justify-content:space-between;">
-                <span>win: <span class="res-b-win" style="color:var(--win); font-weight:bold;"></span></span>
-                <span>loss: <span class="res-b-loss" style="color:var(--loss);"></span></span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-// ============================== BETTING LEDGER (ADMIN) ==============================
-// current managers in a stable team order → { id, name, team }
-function bettingManagers(){
-  const ordered = [...GROUP_A, ...GROUP_B];
-  const seen = new Set();
-  const list = [];
-  ordered.forEach(t => {
-    const name = MANAGERS[t];
-    if(!name) return;
-    const id = name.toLowerCase();
-    if(seen.has(id)) return;
-    seen.add(id);
-    list.push({ id, name, team: t });
-  });
-  return list;
-}
-
-// P/L for a single bet given the match result. decimal odds (2.00 = evens).
-function betPnl(bet, matchResult){
-  const stake = (bet && bet.stake != null) ? +bet.stake : 0;
-  if(!bet || !bet.side || !(stake > 0)) return { has:false, settled:false, staked:0, pnl:0 };
-  if(!matchResult) return { has:true, settled:false, staked:stake, pnl:0 };
-  const winner = getWinner(matchResult);
-  const odds = (bet.odds && +bet.odds >= 1) ? +bet.odds : 2.0;
-  if(winner === null) return { has:true, settled:true, staked:stake, pnl:0, push:true };
-  if(bet.side === winner) return { has:true, settled:true, staked:stake, pnl: stake * (odds - 1) };
-  return { has:true, settled:true, staked:stake, pnl: -stake };
-}
-
-function computeBetLedger(){
-  const agg = {};
-  const known = getKnownManagers();
-  const ensure = (id, name, team) => {
-    if(!agg[id]) agg[id] = { id, name: name || titleCase(id), team: team || '', count:0, settled:0, staked:0, pnl:0 };
-    return agg[id];
-  };
-  bettingManagers().forEach(m => ensure(m.id, m.name, m.team));
-
-  Object.keys(bets).forEach(mid => {
-    const r = results[mid];
-    const matchBets = bets[mid] || {};
-    Object.keys(matchBets).forEach(id => {
-      const pl = betPnl(matchBets[id], r);
-      if(!pl.has) return;
-      const a = ensure(id, known[id], '');
-      a.count++;
-      a.staked += pl.staked;
-      if(pl.settled){ a.settled++; a.pnl += pl.pnl; }
-    });
-  });
-  return Object.values(agg);
-}
-
-function renderBetMatchOptions(){
-  const sel = document.getElementById('bet_fixture_select');
-  if(!sel) return;
-  const cur = sel.value;
-  let activeSchedule = SCHEDULE.slice();
-  if (typeof _isPlayoffsMode !== 'undefined' && _isPlayoffsMode) activeSchedule = activeSchedule.concat(PLAYOFF_SCHEDULE);
-
-  sel.innerHTML = '<option value="">select a fixture…</option>' +
-    activeSchedule.map(f => {
-      const r = results[f.id];
-      const status = r ? ' [played]' : ' [upcoming]';
-      const n = (bets[f.id] && Object.keys(bets[f.id]).length) ? ` · ${Object.keys(bets[f.id]).length} bet(s)` : '';
-      const nameA = TEAM_NAMES[f.a] || 'TBD';
-      const nameB = TEAM_NAMES[f.b] || 'TBD';
-      const label = f.label ? ` (${f.label})` : '';
-      return `<option value="${f.id}">${f.id}${label} · ${nameA} vs ${nameB}${status}${n}</option>`;
-    }).join('');
-  if(cur) sel.value = cur;
-}
-
-// engine odds for a fixture → decimal odds per side, mirroring section 07's fractional
-// ladder so the auto-filled ledger odds match what the predictive card shows.
-// favourite profit = stake / ratio → decimal = 1 + 1/ratio
-// underdog  profit = stake * ratio → decimal = 1 + ratio
-function engineOddsForFixture(f){
-  if(f.a === 'tbd' || f.b === 'tbd') {
-    return { dec: {}, fav: 'tbd', dog: 'tbd', isEvens: true, fractional: 'N/A', ratio: 1 };
-  }
-  const ladder = [
-    {v:1.0,s:'1/1'},{v:1.1,s:'11/10'},{v:1.2,s:'6/5'},{v:1.25,s:'5/4'},
-    {v:1.33,s:'4/3'},{v:1.4,s:'7/5'},{v:1.5,s:'3/2'},{v:1.6,s:'8/5'},
-    {v:1.75,s:'7/4'},{v:1.8,s:'9/5'},{v:2.0,s:'2/1'},{v:2.25,s:'9/4'},
-    {v:2.5,s:'5/2'},{v:2.75,s:'11/4'},{v:3.0,s:'3/1'},{v:3.5,s:'7/2'},
-    {v:4.0,s:'4/1'},{v:5.0,s:'5/1'}
-  ];
+  const f = upcoming.find(x => x.id === id);
   const sA = window.calcTeamStrength(f.a, f.b);
   const sB = window.calcTeamStrength(f.b, f.a);
-  let ratio = (sB > 0 ? sA / sB : 1);
-  let fav = f.a, dog = f.b;
-  if(ratio < 1){ ratio = (ratio > 0 ? 1 / ratio : 1); fav = f.b; dog = f.a; }
-  if(ratio > 5.0) ratio = 5.0;
-  const snap = ladder.reduce((p, c) => Math.abs(c.v - ratio) < Math.abs(p.v - ratio) ? c : p);
-  const isEvens = snap.v === 1.0;
-  const favDec = isEvens ? 2.0 : +(1 + (1 / snap.v)).toFixed(2);
-  const dogDec = isEvens ? 2.0 : +(1 + snap.v).toFixed(2);
-  const dec = {};
-  dec[fav] = favDec;
-  dec[dog] = dogDec;
-  return { dec, fav, dog, isEvens, fractional: snap.s, ratio: snap.v };
+  const total = sA + sB;
+
+  // clamped so a lopsided projection still leaves a visible sliver for the underdog
+  let pA = total > 0 ? (sA / total) * 100 : 50;
+  pA = Math.max(3, Math.min(97, pA));
+  const pB = 100 - pA;
+
+  const cA = TEAM_COLORS[f.a] || 'var(--accent)';
+  const cB = TEAM_COLORS[f.b] || 'var(--accent-2)';
+  const gap = Math.abs(pA - pB);
+  const fav = pA >= pB ? f.a : f.b;
+
+  let verdict;
+  if(gap < 4)       verdict = 'too close to call — the engine can\'t separate them';
+  else if(gap < 12) verdict = `a slight edge to <strong>${TEAM_NAMES[fav]}</strong>`;
+  else if(gap < 26) verdict = `<strong>${TEAM_NAMES[fav]}</strong> favoured`;
+  else              verdict = `<strong>${TEAM_NAMES[fav]}</strong> heavily favoured`;
+
+  feed.innerHTML = `
+    <div class="odds-head">
+      <div class="odds-side a" style="--team-glow:${cA};">
+        <span class="name" onclick="window.takeoverTeam('${f.a}')">${TEAM_NAMES[f.a]}</span>
+        <span class="pct">${pA.toFixed(1)}%</span>
+      </div>
+      <div class="odds-side b" style="--team-glow:${cB};">
+        <span class="name" onclick="window.takeoverTeam('${f.b}')">${TEAM_NAMES[f.b]}</span>
+        <span class="pct">${pB.toFixed(1)}%</span>
+      </div>
+    </div>
+    <div class="odds-track" role="img" aria-label="${TEAM_NAMES[f.a]} ${pA.toFixed(1)} percent, ${TEAM_NAMES[f.b]} ${pB.toFixed(1)} percent">
+      <div class="odds-fill a" style="width:${pA}%; background:${cA};"></div>
+      <div class="odds-fill b" style="width:${pB}%; background:${cB};"></div>
+    </div>
+    <div class="odds-verdict">${verdict}</div>`;
 }
-
-let _betCtx = null;
-
-function renderBetEntryRows(){
-  const wrap = document.getElementById('bet_entry_rows');
-  const statusEl = document.getElementById('bet_fixture_status');
-  const sel = document.getElementById('bet_fixture_select');
-  if(!wrap || !sel) return;
-  const id = sel.value;
-  if(!id){
-    wrap.innerHTML = '';
-    _betCtx = null;
-    if(statusEl) statusEl.innerHTML = '// pick a fixture to record bets';
-    return;
-  }
-  
-  let activeSchedule = SCHEDULE.slice();
-  if (typeof PLAYOFF_SCHEDULE !== 'undefined') activeSchedule = activeSchedule.concat(PLAYOFF_SCHEDULE);
-  const f = activeSchedule.find(x => x.id === id);
-  const r = results[id];
-  const saved = bets[id] || {};
-  const mgrs = bettingManagers();
-
-  const actualA = r ? r.t1 : f.a;
-  const actualB = r ? r.t2 : f.b;
-  const fSim = { id: f.id, a: actualA, b: actualB };
-
-  // engine line for this fixture → auto decimal odds per side
-  const eng = engineOddsForFixture(fSim);
-  _betCtx = { id, fa: actualA, fb: actualB, dec: eng.dec, fav: eng.fav, dog: eng.dog, isEvens: eng.isEvens, fractional: eng.fractional };
-
-  if(statusEl){
-    const engLine = (eng.fav === 'tbd') 
-      ? `<span style="color:var(--text-dim);">odds unavailable until teams are decided</span>`
-      : (eng.isEvens
-        ? `evenly matched · both <strong>2.00</strong>`
-        : `<strong style="color:${TEAM_COLORS[eng.fav]};">${eng.fav.toUpperCase()} ${eng.dec[eng.fav].toFixed(2)}</strong> · <strong style="color:${TEAM_COLORS[eng.dog]};">${eng.dog.toUpperCase()} ${eng.dec[eng.dog].toFixed(2)}</strong> <span style="color:var(--text-dim);">(${eng.fractional})</span>`);
-    
-    const dispA = actualA === 'tbd' ? 'TBD' : actualA.toUpperCase();
-    const dispB = actualB === 'tbd' ? 'TBD' : actualB.toUpperCase();
-
-    if(r){
-      const winner = getWinner(r);
-      const wtxt = winner ? `${winner.toUpperCase()} won` : 'tied — bets push';
-      statusEl.innerHTML = `<span class="accent">${id}</span> · <span class="played">played</span> · ${dispA} vs ${dispB} · ${wtxt}<br>// engine line: ${engLine} <span style="color:var(--text-dim);">· from current strength</span>`;
-    } else {
-      statusEl.innerHTML = `<span class="accent">${id}</span> · <span class="upcoming-text">upcoming</span> · ${dispA} vs ${dispB} · settles once the result is logged<br>// engine line: ${engLine}`;
-    }
-  }
-
-  wrap.innerHTML = mgrs.map((m, i) => {
-    const b = saved[m.id] || {};
-    const side = b.side || '';
-    const stake = (b.stake != null) ? b.stake : '';
-    let oddsInit = '';
-    if(b.odds != null) oddsInit = b.odds;                       // locked snapshot from a saved bet
-    else if(side && eng.dec[side] != null) oddsInit = eng.dec[side]; // else auto from engine
-    return `
-      <div class="bet-entry-block">
-        <div class="bet-grid-row">
-          <div>
-            <label>Manager</label>
-            <div class="mgr-pick-name" style="color:${TEAM_COLORS[m.team]}; cursor:pointer; transition:filter .2s;" onclick="window.openManagerBetHistory('${m.id}', '${m.name}', '${m.team}')" title="view history" onmouseover="this.style.filter='brightness(1.3)'" onmouseout="this.style.filter='none'">${m.name}</div>
-          </div>
-          <div>
-          <label>Bet On</label>
-            <select id="betside_${i}" onchange="window.onBetSideChange(${i})">
-              <option value="" ${side === '' ? 'selected' : ''}>— no bet —</option>
-              ${actualA === 'tbd' 
-                ? TEAMS.map(t => `<option value="${t}" ${side === t ? 'selected' : ''}>${t.toUpperCase()}</option>`).join('')
-                : `<option value="${actualA}" ${side === actualA ? 'selected' : ''}>${actualA.toUpperCase()}</option>
-                   <option value="${actualB}" ${side === actualB ? 'selected' : ''}>${actualB.toUpperCase()}</option>`}
-            </select>
-          </div>
-          <div>
-            <label>Stake</label>
-            <input type="number" min="0" step="any" id="betstake_${i}" value="${stake}" placeholder="0" oninput="window.recomputeBetRow(${i})">
-          </div>
-          <div>
-            <label>Odds <span style="color:var(--text-dim); letter-spacing:0;">· auto</span></label>
-            <input type="number" min="1" step="any" id="betodds_${i}" value="${oddsInit}" placeholder="—" oninput="window.recomputeBetRow(${i})" style="color:var(--accent); font-weight:700;">
-          </div>
-        </div>
-        <div class="bet-outcome" id="betout_${i}"></div>
-      </div>`;
-  }).join('');
-
-  // paint each row's live outcome preview
-  mgrs.forEach((m, i) => window.recomputeBetRow(i));
-}
-
-function renderBetLedger(){
-  const tbodyAdmin = document.getElementById('bet_ledger_body');
-  const metaAdmin = document.getElementById('bet_ledger_meta');
-  const tbodyPublic = document.getElementById('public_ledger_body');
-  const metaPublic = document.getElementById('public_ledger_meta');
-
-  const rows = computeBetLedger();
-  const anyBets = rows.some(x => x.count > 0);
-  let html = '';
-  let metaText = '// no bets recorded yet';
-
-  if(!anyBets){
-    html = '<tr><td colspan="6" class="feed-empty">no bets recorded yet.</td></tr>';
-  } else {
-    rows.sort((a, b) => b.pnl - a.pnl || b.staked - a.staked);
-    html = rows.map(x => {
-      const cls = x.pnl > 0 ? 'pos' : (x.pnl < 0 ? 'neg' : 'zero');
-      const sign = x.pnl > 0 ? '+' : '';
-      const teamCell = x.team
-        ? `<span class="team-cell" style="--team-glow:${TEAM_COLORS[x.team]};" onclick="document.querySelectorAll('.modal-overlay.show').forEach(m=>m.classList.remove('show')); window.takeoverTeam('${x.team}')">${x.team.toUpperCase()}</span>`
-        : '<span style="color:var(--text-dim);">—</span>';
-      return `
-        <tr>
-          <td style="text-align:left; padding-left:18px; font-weight:700; text-transform:uppercase; color:var(--text); cursor:pointer; transition:color .2s;" onclick="window.openManagerBetHistory('${x.id}', '${x.name}', '${x.team}')" title="view history" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text)'">${x.name}</td>
-          <td>${teamCell}</td>
-          <td class="num">${x.count}</td>
-          <td class="num">${x.settled}</td>
-          <td class="num">${x.staked.toFixed(2)}</td>
-          <td class="num bet-pnl ${cls}" style="font-weight:800; font-size:1rem;">${sign}${x.pnl.toFixed(2)}</td>
-        </tr>`;
-    }).join('');
-    const totalBets = rows.reduce((s, x) => s + x.count, 0);
-    const totalSettled = rows.reduce((s, x) => s + x.settled, 0);
-    const net = rows.reduce((s, x) => s + x.pnl, 0);
-    metaText = `// ${totalBets} bet(s) · ${totalSettled} settled · table net: <strong style="color:${net >= 0 ? 'var(--win)' : 'var(--loss)'};">${net >= 0 ? '+' : ''}${net.toFixed(2)} V$</strong>`;
-  }
-
-  if(tbodyAdmin) tbodyAdmin.innerHTML = html;
-  if(metaAdmin) metaAdmin.innerHTML = metaText;
-  if(tbodyPublic) tbodyPublic.innerHTML = html;
-  if(metaPublic) metaPublic.innerHTML = metaText;
-}
-function renderBetAdmin(){
-  renderBetMatchOptions();
-  renderBetEntryRows();
-  renderBetLedger();
-}
-
-window.switchBetTab = function(tab){
-  const entry = tab === 'entry';
-  const e = document.getElementById('bettab_entry');
-  const l = document.getElementById('bettab_ledger');
-  if(e) e.style.display = entry ? 'block' : 'none';
-  if(l) l.style.display = entry ? 'none' : 'block';
-  const eb = document.getElementById('bettab_entry_btn');
-  const lb = document.getElementById('bettab_ledger_btn');
-  if(eb) eb.classList.toggle('active', entry);
-  if(lb) lb.classList.toggle('active', !entry);
-  if(!entry) renderBetLedger();
-};
-
-// auto-fill the engine's decimal odds for the chosen side, then refresh the preview
-window.onBetSideChange = function(i){
-  const ctx = _betCtx;
-  const sideEl = document.getElementById('betside_' + i);
-  const oddsEl = document.getElementById('betodds_' + i);
-  const side = sideEl ? sideEl.value : '';
-  if(oddsEl) oddsEl.value = (ctx && side && ctx.dec[side] != null) ? ctx.dec[side] : '';
-  window.recomputeBetRow(i);
-};
-
-// live "if they win / if they lose" preview for one row (+ settled badge for played matches)
-window.recomputeBetRow = function(i){
-  const ctx = _betCtx;
-  const out = document.getElementById('betout_' + i);
-  if(!ctx || !out) return;
-  const sideEl = document.getElementById('betside_' + i);
-  const stakeEl = document.getElementById('betstake_' + i);
-  const oddsEl = document.getElementById('betodds_' + i);
-  const side = sideEl ? sideEl.value : '';
-  if(!side){ out.innerHTML = '<span class="bet-out-empty">no bet — pick a side to see the line</span>'; return; }
-  const sideLabel = `<span style="color:${TEAM_COLORS[side]}; font-weight:700;">${side.toUpperCase()}</span>`;
-  const odds = parseFloat(oddsEl ? oddsEl.value : '');
-  const stake = parseFloat(stakeEl ? stakeEl.value : '');
-  if(isNaN(odds) || odds < 1){ out.innerHTML = `bet on ${sideLabel} · <span class="bet-out-empty">no odds yet</span>`; return; }
-  if(isNaN(stake) || stake <= 0){
-    out.innerHTML = `bet on ${sideLabel} @ <strong>${odds.toFixed(2)}</strong> · enter a stake to see returns`;
-    return;
-  }
-  const win = stake * (odds - 1);
-  let line = `bet on ${sideLabel} @ <strong>${odds.toFixed(2)}</strong> · `
-    + `<span style="color:var(--win);">win +${win.toFixed(2)}</span> · `
-    + `<span style="color:var(--loss);">loss -${stake.toFixed(2)}</span>`;
-  const r = results[ctx.id];
-  if(r){
-    const winner = getWinner(r);
-    let badge;
-    if(winner === null) badge = `<span class="bet-pnl zero">● settled · push 0.00</span>`;
-    else if(winner === side) badge = `<span class="bet-pnl pos">● settled +${win.toFixed(2)}</span>`;
-    else badge = `<span class="bet-pnl neg">● settled -${stake.toFixed(2)}</span>`;
-    line += ` &nbsp;·&nbsp; ${badge}`;
-  }
-  out.innerHTML = line;
-};
-
-window.loadBetFixture = function(){
-  renderBetEntryRows();
-};
-
-window.saveBets = function(){
-  const sel = document.getElementById('bet_fixture_select');
-  const id = sel ? sel.value : '';
-  if(!id){ window.showToast('select a fixture first.', 'error'); return; }
-  let activeSchedule = SCHEDULE.slice();
-  if (typeof PLAYOFF_SCHEDULE !== 'undefined') activeSchedule = activeSchedule.concat(PLAYOFF_SCHEDULE);
-  const f = activeSchedule.find(x => x.id === id);
-  const mgrs = bettingManagers();
-  const matchBets = {};
-  let bad = null;
-  mgrs.forEach((m, i) => {
-    const sideEl = document.getElementById('betside_' + i);
-    const stakeEl = document.getElementById('betstake_' + i);
-    const oddsEl = document.getElementById('betodds_' + i);
-    if(!sideEl) return;
-    const side = sideEl.value;
-    if(!side) return;
-    const stake = parseFloat(stakeEl.value);
-    let odds = parseFloat(oddsEl.value);
-    if(isNaN(stake) || stake <= 0){ bad = bad || `${m.name}: stake must be > 0 (or set “— no bet —”).`; return; }
-    if((isNaN(odds) || odds < 1) && _betCtx && _betCtx.dec[side] != null) odds = _betCtx.dec[side];
-    if(isNaN(odds) || odds < 1) odds = 2.0;
-    if(f.a !== 'tbd' && side !== f.a && side !== f.b){ bad = bad || `${m.name}: pick a valid side.`; return; }
-    matchBets[m.id] = { side, stake, odds };
-  });
-  if(bad){ window.showToast(bad, 'error'); return; }
-
-  if(Object.keys(matchBets).length === 0) delete bets[id];
-  else bets[id] = matchBets;
-
-  pushBets(id);
-  renderBetMatchOptions();
-  renderBetEntryRows();
-  renderBetLedger();
-  window.showToast(`saved ${Object.keys(matchBets).length} bet(s) for ${id}.`, 'success');
-};
-
-window.clearBetsForMatch = function(){
-  const sel = document.getElementById('bet_fixture_select');
-  const id = sel ? sel.value : '';
-  if(!id){ window.showToast('select a fixture first.', 'error'); return; }
-  if(!bets[id]){ window.showToast(`${id} has no recorded bets.`, 'error'); return; }
-  if(confirm(`clear all recorded bets for ${id}?`)){
-    delete bets[id];
-    pushBets(id);
-    renderBetMatchOptions();
-    renderBetEntryRows();
-    renderBetLedger();
-    window.showToast(`cleared bets for ${id}.`, 'success');
-  }
-};
-
-window.openManagerBetHistory = function(mgrId, mgrName, team) {
-  let historyHtml = '';
-  let totalStaked = 0, totalPnl = 0, settledCount = 0;
-
-  const mgrBets = [];
-  Object.keys(bets).forEach(mid => {
-    if(bets[mid] && bets[mid][mgrId]) mgrBets.push({ mid, bet: bets[mid][mgrId] });
-  });
-
-  mgrBets.sort((a,b) => {
-    const numA = parseInt(a.mid.replace(/\D/g, '')) || 0;
-    const numB = parseInt(b.mid.replace(/\D/g, '')) || 0;
-    return numB - numA;
-  });
-
-  if(mgrBets.length === 0){
-    historyHtml = `<div class="feed-empty">no bets recorded yet.</div>`;
-  } else {
-    historyHtml += `<div style="display:flex; flex-direction:column; gap:10px;">`;
-    mgrBets.forEach(item => {
-      const f = SCHEDULE.find(x => x.id === item.mid);
-      const r = results[item.mid];
-      const b = item.bet;
-      const pl = betPnl(b, r);
-
-      totalStaked += pl.staked;
-      if(pl.settled) {
-        totalPnl += pl.pnl;
-        settledCount++;
-      }
-
-      const cls = pl.settled ? (pl.pnl > 0 ? 'pos' : (pl.pnl < 0 ? 'neg' : 'zero')) : '';
-      const sign = pl.pnl > 0 ? '+' : '';
-      const pnlBadge = pl.settled
-        ? `<span class="bet-pnl ${cls}" style="font-weight:700;">${sign}${pl.pnl.toFixed(2)} V$</span>`
-        : `<span style="color:var(--accent); font-size:.75rem; letter-spacing:.1em; text-transform:uppercase;">pending</span>`;
-
-      const fixtureStr = f ? `${f.a.toUpperCase()} vs ${f.b.toUpperCase()}` : item.mid;
-      const sideColor = TEAM_COLORS[b.side] || 'var(--text)';
-
-      let matchResStr = '';
-      if(r) {
-        const winner = getWinner(r);
-        matchResStr = winner
-          ? `<span style="color:var(--text-dim); font-size:.75rem; margin-left:6px;">(result: <span style="color:${TEAM_COLORS[winner]}">${winner.toUpperCase()}</span> won)</span>`
-          : `<span style="color:var(--text-dim); font-size:.75rem; margin-left:6px;">(result: tied)</span>`;
-      }
-
-      historyHtml += `
-        <div style="background:var(--surface-2); border:1px solid var(--border); padding:12px 16px; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <div style="font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--text-dim); margin-bottom:6px; letter-spacing:.05em;">${item.mid} · ${fixtureStr}</div>
-            <div style="font-size:.92rem;">
-              bet <strong style="color:${sideColor};">${b.side.toUpperCase()}</strong> @ ${b.odds.toFixed(2)}
-              <span style="font-family:'JetBrains Mono',monospace; font-size:.75rem; color:var(--text-muted); margin-left:8px;">stake: ${b.stake.toFixed(2)}</span>
-              ${matchResStr}
-            </div>
-          </div>
-          <div class="num" style="font-size:1.05rem;">
-            ${pnlBadge}
-          </div>
-        </div>`;
-    });
-    historyHtml += `</div>`;
-
-    const netCls = totalPnl > 0 ? 'pos' : (totalPnl < 0 ? 'neg' : 'zero');
-    const netSign = totalPnl > 0 ? '+' : '';
-    const summaryHtml = `
-      <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:18px; padding-bottom:16px; border-bottom:1px dashed var(--border-bright);">
-        <div>
-          <div style="font-family:'JetBrains Mono',monospace; font-size:.65rem; color:var(--text-dim); text-transform:uppercase;">Total Bets</div>
-          <div style="font-family:'Anton',sans-serif; font-size:1.6rem; color:var(--text); line-height:1; margin-top:4px;">${mgrBets.length}</div>
-        </div>
-        <div>
-          <div style="font-family:'JetBrains Mono',monospace; font-size:.65rem; color:var(--text-dim); text-transform:uppercase;">Settled</div>
-          <div style="font-family:'Anton',sans-serif; font-size:1.6rem; color:var(--text); line-height:1; margin-top:4px;">${settledCount}</div>
-        </div>
-        <div>
-          <div style="font-family:'JetBrains Mono',monospace; font-size:.65rem; color:var(--text-dim); text-transform:uppercase;">Total Staked</div>
-          <div style="font-family:'Anton',sans-serif; font-size:1.6rem; color:var(--text); line-height:1; margin-top:4px;">${totalStaked.toFixed(2)}</div>
-        </div>
-        <div style="margin-left:auto; text-align:right;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:.65rem; color:var(--text-dim); text-transform:uppercase;">Net P/L</div>
-          <div class="bet-pnl ${netCls}" style="font-family:'Anton',sans-serif; font-size:1.9rem; line-height:1; margin-top:4px;">${netSign}${totalPnl.toFixed(2)}</div>
-        </div>
-      </div>`;
-    historyHtml = summaryHtml + historyHtml;
-  }
-
-  const titleEl = document.getElementById('manager_bet_title');
-  if(titleEl) titleEl.innerHTML = `<span style="color:${TEAM_COLORS[team] || 'var(--accent)'};">${mgrName.toUpperCase()}</span>`;
-  document.getElementById('manager_bet_body').innerHTML = historyHtml;
-  document.getElementById('manager_bet_modal').classList.add('show');
-};
 
 // ============================== FAIRPLAY (FP) ==============================
 // each team's FP average across every match an admin has rated (played or not).
@@ -6198,7 +5610,6 @@ function updateUI(){
   renderCareerStats();
   renderH2HMatrix();
   renderManagerH2HMatrix();
-  renderBetLedger();
   renderBracket();
   reapplySorts();
 
@@ -6740,12 +6151,11 @@ window.swapMatches = function(){
     // 3. execute swaps
     swapDict(results);
     swapDict(fairplay);
-    swapDict(bets);
 
    // 4. commit everything to cloud in ONE atomic multi-path write — schedule + both
-    // matches' results, fairplay and bets land together or not at all, so a dropped
+    // matches' results and fairplay land together or not at all, so a dropped
     // write can never leave the schedule and the results naming different teams.
-    saveLocalSchedule(); saveLocal(); saveLocalFp(); saveLocalBets();
+    saveLocalSchedule(); saveLocal(); saveLocalFp();
     if(dbRef){
       _pendingMatches[m1] = results[m1] || null;
       _pendingMatches[m2] = results[m2] || null;
@@ -6754,7 +6164,6 @@ window.swapMatches = function(){
       [m1, m2].forEach(id => {
         upd['results/' + id] = results[id] ? sanitize(results[id]) : null;
         upd['fairplay/' + id] = fairplay[id] ? sanitize(fairplay[id]) : null;
-        upd['bets/' + id] = bets[id] ? sanitize(bets[id]) : null;
       });
       try {
         const p = dbRef.update(upd);
@@ -6777,7 +6186,6 @@ window.swapMatches = function(){
     updateUI(); 
     
     // forcefully refresh the admin panel dropdowns
-    if(typeof renderBetMatchOptions === 'function') renderBetMatchOptions();
     window.loadFixture();
     
     window.showToast(`swapped schedule and data for ${m1} and ${m2}.`, 'success');
@@ -6793,7 +6201,6 @@ window.exportData = function(){
       schedule: SCHEDULE,
       roster: MANAGERS,
     fairplay,
-    bets,
     results
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -6823,7 +6230,6 @@ window.importData = function(ev){
         if(data.schedule){ applySchedule(data.schedule); cloudSaveSchedule(); }
         if(data.roster){ applyRoster(data.roster); cloudSaveRoster(); }
         if(data.fairplay){ applyFairplay(data.fairplay); cloudSaveFp(); }
-        if(data.bets){ applyBets(data.bets); cloudSaveBets(); }
         pushToCloud();
         updateUI();
         window.showToast(`imported ${count} matches.`, 'success');
@@ -6890,7 +6296,6 @@ window.unlockAdmin = function(){
     if(_rb) _rb.style.display = 'none';
     const _rbtn = document.getElementById('roster_toggle_btn');
     if(_rbtn) _rbtn.textContent = 'Show ▸';
-    renderBetAdmin();
     window.showToast('admin access granted.', 'success');
     document.getElementById('admin_panel').scrollIntoView({ behavior:'smooth' });
   }
