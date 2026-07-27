@@ -1126,55 +1126,47 @@ table:has(#standings_body) thead th:nth-child(n+2):nth-child(-n+8){
   cursor:default;
 }
 
-/* odds — head-to-head win-probability bar */
-.odds-panel{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:6px;
-  padding:20px 24px 22px;
+/* odds — win-probability bar, tucked inside an Up Next row and revealed on hover */
+.odds-inline{
+  max-height:0; opacity:0; overflow:hidden; margin-top:0;
+  transition:max-height .35s ease, opacity .25s ease, margin-top .35s ease;
 }
-.odds-pick{
-  display:flex; align-items:center; gap:12px;
-  flex-wrap:wrap;
-  padding-bottom:18px; margin-bottom:20px;
-  border-bottom:1px dashed var(--border-bright);
+.feed-item:hover .odds-inline,
+.feed-item:focus-within .odds-inline{
+  max-height:160px; opacity:1; margin-top:12px;
 }
-.odds-pick label{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.62rem; letter-spacing:.2em; text-transform:uppercase;
-  color:var(--text-dim); margin:0;
+/* touch devices never fire :hover — keep the bar open there so it isn't unreachable */
+@media (hover:none){
+  .odds-inline{ max-height:160px; opacity:1; margin-top:12px; }
 }
-.odds-pick select{ flex:1; min-width:230px; max-width:420px; margin:0; }
+.odds-inline-body{
+  padding-top:11px;
+  border-top:1px dashed var(--border-bright);
+}
 .odds-head{
-  display:flex; justify-content:space-between; align-items:flex-end;
-  gap:14px; margin-bottom:11px;
+  display:flex; align-items:baseline; justify-content:space-between;
+  gap:10px; margin-bottom:7px;
 }
-.odds-side{ display:flex; flex-direction:column; gap:3px; min-width:0; }
-.odds-side.b{ text-align:right; align-items:flex-end; }
-.odds-side .name{
-  font-family:'Anton',sans-serif; font-size:1.3rem; letter-spacing:.05em;
-  text-transform:uppercase; cursor:pointer;
-  color:var(--team-glow, var(--text));
-  transition:filter .2s ease;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;
-}
-.odds-side .name:hover{ filter:brightness(1.25); }
-.odds-side .pct{
+.odds-head .pct{
   font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums;
-  font-size:1.85rem; font-weight:700; line-height:1;
-  color:var(--team-glow, var(--text));
+  font-size:1.02rem; font-weight:700; line-height:1;
+}
+.odds-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.55rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--text-dim); white-space:nowrap;
 }
 .odds-track{
-  display:flex; height:26px;
-  border:1px solid var(--border-bright); border-radius:5px;
-  overflow:hidden; background:var(--surface-2);
+  display:flex; height:13px;
+  border:1px solid var(--border-bright); border-radius:4px;
+  overflow:hidden; background:var(--surface-3);
 }
 .odds-fill{ height:100%; transition:width .55s cubic-bezier(.4,0,.2,1); }
 .odds-fill.a{ border-right:2px solid var(--surface); }
 .odds-verdict{
-  margin-top:13px; text-align:center;
+  margin-top:8px; text-align:center;
   font-family:'JetBrains Mono',monospace;
-  font-size:.68rem; letter-spacing:.16em; text-transform:uppercase;
+  font-size:.6rem; letter-spacing:.14em; text-transform:uppercase;
   color:var(--text-dim);
 }
 .odds-verdict strong{ color:var(--text-muted); font-weight:700; }
@@ -2251,7 +2243,10 @@ button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
       </div>
       <div>
         <div class="section-head">
-          <h2 class="section-title"><span class="num-pre">05</span>Up Next</h2>
+          <h2 class="section-title" style="display:flex; align-items:center; gap:10px;">
+            <span><span class="num-pre">05</span>Up Next</span>
+            <span onclick="document.getElementById('odds_info_modal').classList.add('show')" style="cursor:pointer; color:var(--text-dim); font-size:1.1rem; font-family:'JetBrains Mono', monospace; font-weight:normal; transition:color .2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-dim)'" title="how the odds are calculated">&#9432;</span>
+          </h2>
           <div class="section-meta" id="upcoming_meta">—</div>
         </div>
         <div class="feed" id="upcoming_feed"></div>
@@ -2478,25 +2473,6 @@ button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
     </div>
   </section>
 
- <section class="section" id="odds_section">
-    <div class="section-head">
-      <div style="display:flex; justify-content:space-between; width:100%; align-items:baseline;">
-        <h2 class="section-title" style="display:flex; align-items:center; gap:10px;">
-          <span><span class="num-pre">07</span>Predictive Odds</span>
-          <span onclick="document.getElementById('odds_info_modal').classList.add('show')" style="cursor:pointer; color:var(--text-dim); font-size:1.1rem; font-family:'JetBrains Mono', monospace; font-weight:normal; transition:color .2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-dim)'">&#9432;</span>
-        </h2>
-        <div class="section-meta">win probability &middot; weighted by form &amp; head-to-head</div>
-      </div>
-    </div>
-    <div class="odds-panel">
-      <div class="odds-pick">
-        <label for="odds_fixture">Fixture</label>
-        <select id="odds_fixture" onchange="window.selectOddsFixture(this.value)"></select>
-      </div>
-      <div id="odds_feed"></div>
-    </div>
-  </section>
-
   <section class="section" id="playoffs_section" style="display:none;">
     <div class="section-head">
       <h2 class="section-title" style="color:var(--accent); text-shadow: 0 0 14px rgba(var(--accent-rgb),0.6);"><span class="num-pre" style="color:var(--accent);">◆</span>Qualification Scenarios</h2>
@@ -2507,7 +2483,7 @@ button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
 
   <section class="section" id="managers_section">
     <div class="section-head">
-      <h2 class="section-title"><span class="num-pre">08</span>Team Managers</h2>
+      <h2 class="section-title"><span class="num-pre">07</span>Team Managers</h2>
       <div class="section-meta">ten nations · ten managers</div>
     </div>
     <div class="managers-grid" id="managers_grid"></div>
@@ -2736,7 +2712,7 @@ button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
     <!-- AFTER -->
     <div style="font-size:.88rem; color:var(--text-muted); line-height:1.6;">
       <p><strong style="color:var(--accent);">strength:</strong> head-to-head 45% (90% manager rivalry · 10% nation rivalry, all banked seasons + live S1) · present form 55% (BASRA, BEWM & current win/loss-streak confidence). the two nations' strengths are then compared head-to-head.</p>
-      <p><strong style="color:var(--accent);">the bar:</strong> the two strengths are normalised against each other and drawn as a single 100% line — each nation's share painted in its own primary colour. A 50/50 split means the engine can't separate them.</p>
+      <p><strong style="color:var(--accent);">the bar:</strong> hover any fixture in <em>Up Next</em>. The two strengths are normalised against each other and drawn as a single 100% line — each nation's share painted in its own primary colour. A 50/50 split means the engine can't separate them.</p>
       <p><strong style="color:var(--accent);">reading it:</strong> this is a projection from results so far, not a market. Early in the season, with little form banked, most fixtures will sit close to even.</p>
       <p style="margin-top:12px; font-style:italic; font-size:.8rem; color:var(--text-dim);">predictive & entertainment only.</p>
     </div>
@@ -2924,10 +2900,6 @@ let results = {};
 let fairplay = {};
 let stream = { live:false, channel:'', platform:'twitch' };
 let currentFilter = 'all';
-// which of the upcoming fixtures the odds panel is showing. null = the next match.
-// declared up here with the rest of the state so the local-only boot path (which
-// calls updateUI synchronously) can never reach it before initialisation.
-let _oddsFixture = null;
 let selectedTeamFilter = null;
 let isUiInitialized = false;
 window.currentStandings = [];
@@ -2972,7 +2944,6 @@ function clearAccentOverride(){
 
 window.togglePlayoffsMode = function() {
   _isPlayoffsMode = !_isPlayoffsMode;
-  const oddsSec = document.getElementById('odds_section');
   const mgrsSec = document.getElementById('managers_section');
   const statsSec = document.getElementById('stats_section');
   const poSec = document.getElementById('playoffs_section');
@@ -2988,7 +2959,6 @@ window.togglePlayoffsMode = function() {
     clearAccentOverride();
     
     // Hide standard elements, show Playoff Engine & Bracket
-    if(oddsSec) oddsSec.style.display = 'none';
     if(mgrsSec) mgrsSec.style.display = 'none';
     if(statsSec) statsSec.style.display = 'none';
     if(splitView) splitView.style.display = 'none';
@@ -3010,7 +2980,6 @@ window.resetTakeover = function(){
   _isPlayoffsMode = false;
   document.body.classList.remove('playoffs-mode-active');
   
-  const oddsSec = document.getElementById('odds_section');
   const mgrsSec = document.getElementById('managers_section');
   const statsSec = document.getElementById('stats_section');
   const poSec = document.getElementById('playoffs_section');
@@ -3018,7 +2987,6 @@ window.resetTakeover = function(){
   const bracketView = document.getElementById('playoff_bracket_view');
   
   // Restore standard visibility
-  if(oddsSec) oddsSec.style.display = 'block';
   if(mgrsSec) mgrsSec.style.display = 'block';
   if(statsSec) statsSec.style.display = 'block';
   if(splitView) splitView.style.display = 'grid'; // matches .split class
@@ -3223,7 +3191,6 @@ window.openScenarioModal = function(team) {
 window.takeoverTeam = function(team){
   _isPlayoffsMode = false;
   document.body.classList.remove('playoffs-mode-active');
-  const oddsSec = document.getElementById('odds_section');
   const mgrsSec = document.getElementById('managers_section');
   const statsSec = document.getElementById('stats_section');
   const poSec = document.getElementById('playoffs_section');
@@ -3231,7 +3198,6 @@ window.takeoverTeam = function(team){
   const bracketView = document.getElementById('playoff_bracket_view');
 
   // Restore standard visibility
-  if(oddsSec) oddsSec.style.display = 'block';
   if(mgrsSec) mgrsSec.style.display = 'block';
   if(statsSec) statsSec.style.display = 'block';
   if(splitView) splitView.style.display = 'grid'; // Matches your .split CSS class
@@ -3269,15 +3235,13 @@ window.resetTakeover = function(){
   document.body.classList.remove('playoffs-mode-active');
   
   // 1. Grab all the togglable sections
-  const oddsSec = document.getElementById('odds_section');
   const mgrsSec = document.getElementById('managers_section');
   const statsSec = document.getElementById('stats_section');
   const poSec = document.getElementById('playoffs_section');
   const splitView = document.getElementById('standard_split_view');
   const bracketView = document.getElementById('playoff_bracket_view');
   
-  // 2. Restore standard visibility (Turn Stats/Odds/Mgrs back ON, Playoffs OFF)
-  if(oddsSec) oddsSec.style.display = 'block';
+  // 2. Restore standard visibility (turn Stats/Managers back ON, knockouts OFF)
   if(mgrsSec) mgrsSec.style.display = 'block';
   if(statsSec) statsSec.style.display = 'block';
   if(splitView) splitView.style.display = 'grid';
@@ -4210,7 +4174,7 @@ function renderUpcomingFeed(){
     return;
   }
   el.innerHTML = upcoming.map(f => `
-    <div class="feed-item">
+    <div class="feed-item" tabindex="0">
       <div class="feed-meta">
         <span>${f.id}</span>
         <span class="tag-upcoming">Upcoming</span>
@@ -4220,6 +4184,7 @@ function renderUpcomingFeed(){
         <span class="vs">vs</span>
         <span class="team-link" style="--team-glow:${TEAM_COLORS[f.b] || 'var(--text-muted)'};" onclick="window.takeoverTeam('${f.b}')">${TEAM_NAMES[f.b] || 'TBD'}</span>
       </div>
+      ${oddsBarHtml(f)}
     </div>`).join('');
     
   const remainingText = selectedTeamFilter
@@ -5196,7 +5161,7 @@ function renderManagerH2HMatrix(){
 // global helper to calculate dynamic team strength (used for odds and underdog upsets)
 // model: 45% head-to-head (90% manager-vs-manager rivalry, 10% team-vs-team) +
 // 55% present form (BASRA, BEWM, and current win/loss-streak confidence). everything sits
-// on a ~0–100 scale where 50 is neutral; renderOdds takes the ratio of the two strengths.
+// on a ~0–100 scale where 50 is neutral; oddsBarHtml normalises the two into a 100% split.
 window.calcTeamStrength = function(t, opp) {
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   const battingInnings = getBattingInnings();
@@ -5348,40 +5313,13 @@ window.calcTotalCareerValue = function(team) {
   // combine for the true living franchise stock price
   return legacyBaseValue + s1ValueAdded;
 };
-window.selectOddsFixture = function(id){
-  _oddsFixture = id || null;
-  renderOdds();
-};
+// win-probability bar for one upcoming fixture, rendered inside its Up Next row.
+// the two nations' strength scores (see calcTeamStrength) are normalised against
+// each other so the pair always sums to 100, and each share is painted in that
+// nation's primary colour. returns '' for knockout placeholders with no teams yet.
+function oddsBarHtml(f){
+  if(!TEAMS.includes(f.a) || !TEAMS.includes(f.b)) return '';
 
-// horizontal win-probability bar for one upcoming fixture. the two nations'
-// strength scores (see calcTeamStrength) are normalised against each other, so
-// the pair always sums to 100, and each share is painted in that nation's
-// primary colour.
-function renderOdds(){
-  const sel = document.getElementById('odds_fixture');
-  const feed = document.getElementById('odds_feed');
-  if(!sel || !feed) return;
-
-  // the next ten fixtures still to be played
-  const upcoming = SCHEDULE.filter(f => !results[f.id]).slice(0, 10);
-
-  if(upcoming.length === 0){
-    sel.innerHTML = '';
-    sel.disabled = true;
-    feed.innerHTML = '<div class="feed-empty">all group fixtures completed — no upcoming odds.</div>';
-    return;
-  }
-  sel.disabled = false;
-
-  // hold the user's pick if it is still unplayed, otherwise fall to the next match
-  const id = (_oddsFixture && upcoming.some(f => f.id === _oddsFixture)) ? _oddsFixture : upcoming[0].id;
-  _oddsFixture = id;
-
-  sel.innerHTML = upcoming.map((f, n) =>
-    `<option value="${f.id}"${f.id === id ? ' selected' : ''}>${f.id} · ${TEAM_NAMES[f.a]} v ${TEAM_NAMES[f.b]}${n === 0 ? ' · next up' : ''}</option>`
-  ).join('');
-
-  const f = upcoming.find(x => x.id === id);
   const sA = window.calcTeamStrength(f.a, f.b);
   const sB = window.calcTeamStrength(f.b, f.a);
   const total = sA + sB;
@@ -5397,27 +5335,26 @@ function renderOdds(){
   const fav = pA >= pB ? f.a : f.b;
 
   let verdict;
-  if(gap < 4)       verdict = 'too close to call — the engine can\'t separate them';
+  if(gap < 4)       verdict = 'too close to call';
   else if(gap < 12) verdict = `a slight edge to <strong>${TEAM_NAMES[fav]}</strong>`;
   else if(gap < 26) verdict = `<strong>${TEAM_NAMES[fav]}</strong> favoured`;
   else              verdict = `<strong>${TEAM_NAMES[fav]}</strong> heavily favoured`;
 
-  feed.innerHTML = `
-    <div class="odds-head">
-      <div class="odds-side a" style="--team-glow:${cA};">
-        <span class="name" onclick="window.takeoverTeam('${f.a}')">${TEAM_NAMES[f.a]}</span>
-        <span class="pct">${pA.toFixed(1)}%</span>
-      </div>
-      <div class="odds-side b" style="--team-glow:${cB};">
-        <span class="name" onclick="window.takeoverTeam('${f.b}')">${TEAM_NAMES[f.b]}</span>
-        <span class="pct">${pB.toFixed(1)}%</span>
-      </div>
-    </div>
-    <div class="odds-track" role="img" aria-label="${TEAM_NAMES[f.a]} ${pA.toFixed(1)} percent, ${TEAM_NAMES[f.b]} ${pB.toFixed(1)} percent">
-      <div class="odds-fill a" style="width:${pA}%; background:${cA};"></div>
-      <div class="odds-fill b" style="width:${pB}%; background:${cB};"></div>
-    </div>
-    <div class="odds-verdict">${verdict}</div>`;
+  return `
+      <div class="odds-inline">
+        <div class="odds-inline-body">
+          <div class="odds-head">
+            <span class="pct" style="color:${cA};">${pA.toFixed(1)}%</span>
+            <span class="odds-label">win probability</span>
+            <span class="pct" style="color:${cB};">${pB.toFixed(1)}%</span>
+          </div>
+          <div class="odds-track" role="img" aria-label="${TEAM_NAMES[f.a]} ${pA.toFixed(1)} percent, ${TEAM_NAMES[f.b]} ${pB.toFixed(1)} percent">
+            <div class="odds-fill a" style="width:${pA}%; background:${cA};"></div>
+            <div class="odds-fill b" style="width:${pB}%; background:${cB};"></div>
+          </div>
+          <div class="odds-verdict">${verdict}</div>
+        </div>
+      </div>`;
 }
 
 // ============================== FAIRPLAY (FP) ==============================
@@ -5604,7 +5541,6 @@ function updateUI(){
   renderStatBoards();
   const _gp = document.getElementById('stats_graphs');
   if(_gp && _gp.style.display !== 'none') renderCharts();
-  renderOdds();
   renderExhaustiveStats();
   renderMvmStats();
   renderCareerStats();
