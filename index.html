@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Real Cricket World Cup — Season One</title>
-<link rel="icon" type="image/jpeg" href="logorcwc.jpg">
+<link rel="icon" type="image/png" href="logorcwc.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
 
      Crest images are looked up by team code next to this file: ind.png,
      pak.png, sa.png, nz.png, sl.png, aus.png, eng.png, wi.png, ban.png,
-     afg.png — plus logorcwc.jpg for the ribbon and favicon.
+     afg.png — plus logorcwc.png for the ribbon and favicon.
      ============================================================================ -->
 <style>
 /* ============================================================
@@ -2063,7 +2063,7 @@ button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
 
 <div class="ribbon">
   <div class="ribbon-left">
-    <img src="logorcwc.jpg" alt="RCWC Logo" class="ribbon-logo">
+    <img src="logorcwc.png" alt="RCWC Logo" class="ribbon-logo">
     <div class="ribbon-title" onclick="window.togglePlayoffsMode()" style="cursor:pointer; display:inline-flex; align-items:center; gap:10px; transition:filter 0.2s;" onmouseover="this.style.filter='brightness(1.2)'" onmouseout="this.style.filter='none'">
       <span>REAL CRICKET <span class="accent">WORLD</span> CUP</span>
       <span id="playoffs_badge" class="playoffs-badge">
@@ -2721,14 +2721,14 @@ button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
 
 <script>
 const firebaseConfig = {
-    apiKey: "AIzaSyCzTYh9gXEooeBnL2h6ITU6kR8VR0byDnA",
-    authDomain: "rcwc-9b4ee.firebaseapp.com",
-    databaseURL: "https://rcwc-9b4ee-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "rcwc-9b4ee",
-    storageBucket: "rcwc-9b4ee.firebasestorage.app",
-    messagingSenderId: "204963758123",
-    appId: "1:204963758123:web:75ca7b3882000e2555aa6e"
-  };
+  apiKey: "AIzaSyC_q2XGkzgWGVSX4_RSckQnQVrKNdVc6ek",
+  authDomain: "rcpls4.firebaseapp.com",
+  databaseURL: "https://rcpls4-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "rcpls4",
+  storageBucket: "rcpls4.firebasestorage.app",
+  messagingSenderId: "381635970086",
+  appId: "1:381635970086:web:56bba7dd966d6cc8b6d2e7"
+};
 // compat sdk: works as a regular script without es module restrictions.
 // same firebase project as before — but season one writes to its own node
 // (rcwc_s1_v1), so nothing here can touch or be touched by earlier data.
