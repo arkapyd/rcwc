@@ -775,13 +775,19 @@ tbody tr.highlight-row {
 #standings_body tr:hover,
 #standings_body tr.highlight-row{
   background-color: var(--row-c1, var(--surface-2)) !important;
-  /* keep the crest (drop only the dark veil) and blend it into the fill, so it stays
-     visible as a tonal watermark on the colour instead of vanishing into its own hue */
-  background-image: var(--team-logo, none) !important;
-  background-position: var(--logo-x, -22px) center !important;
-  background-size: auto 120px !important;
-  background-repeat: no-repeat !important;
-  background-blend-mode: luminosity;
+  /* the crest blends into the fill as a tonal watermark. underneath it sits a soft
+     pool (--crest-veil) that fades out by 230px, so the crest always has luminance
+     to read against while the rest of the row keeps its pure team colour. */
+  background-image:
+    var(--team-logo, none),
+    linear-gradient(90deg,
+      var(--crest-veil, transparent) 0,
+      var(--crest-veil, transparent) 120px,
+      transparent 230px) !important;
+  background-position: var(--logo-x, -22px) center, left center !important;
+  background-size: auto 120px, 100% 100% !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-blend-mode: luminosity, normal;
 }
 #standings_body tr:hover .pos,
 #standings_body tr:hover .team-cell,
@@ -2759,13 +2765,30 @@ const TEAM_COLORS = {
 // secondary (two-tone) colour — gradient depth on rows, cards and crests
 const TEAM_COLORS_2 = {
   ind:'#ff9933', pak:'#e6e6e6', sa:'#ffb612', nz:'#101010', sl:'#f2a900',
-  aus:'#0b6b45', eng:'#1e4fa3', wi:'#d4a017', ban:'#f42a41', afg:'#d32011'
+  aus:'#0b6b45', eng:'#f0c14b', wi:'#d4a017', ban:'#f42a41', afg:'#d32011'
 };
 const TEAM_NAMES = {
   ind:'India',     pak:'Pakistan', sa:'South Africa', nz:'New Zealand', sl:'Sri Lanka',
   aus:'Australia', eng:'England',  wi:'West Indies',  ban:'Bangladesh', afg:'Afghanistan'
 };
 const OVERS_PER_INNINGS = 5;
+
+/* CREST VEIL — a soft pool of light or shade sitting behind the crest on a
+   highlighted points-table row. The crest is blended into the row fill with
+   `luminosity`, so it disappears whenever the logo's perceived lightness is
+   close to the fill's — England's blue crest on England red measured 1.05:1,
+   i.e. invisible. This shifts only the patch behind the crest, leaving the
+   rest of the row in pure team colour.
+     'light' = the crest is darker than the fill, so lift the patch
+     'dark'  = the crest is lighter than the fill, so deepen the patch
+   Measured from the crest PNGs; recompute if you swap a crest for a very
+   differently-toned one. */
+const CREST_VEIL = {
+  ind:'rgba(0,0,0,.34)',       pak:'rgba(0,0,0,.34)',       sa:'rgba(0,0,0,.34)',
+  nz: 'rgba(255,255,255,.34)', sl: 'rgba(0,0,0,.34)',       aus:'rgba(255,255,255,.34)',
+  eng:'rgba(255,255,255,.34)', wi: 'rgba(0,0,0,.34)',       ban:'rgba(0,0,0,.34)',
+  afg:'rgba(255,255,255,.34)'
+};
 
 /* ============================================================================
    MANAGERS — edit me.
@@ -4093,7 +4116,7 @@ function renderStandings(standings){
       }).join('');
     const nextHtml = nextCells || '<span style="color:var(--text-dim); font-style:italic;">done</span>';
     return `
-      <tr class="${top4}${isHighlighted}${elimClass}" data-team="${s.team}" style="--team-logo:url('${s.team}.png'); --row-c1:${TEAM_COLORS[s.team]}; --row-c2:${TEAM_COLORS_2[s.team] || TEAM_COLORS[s.team]};">
+      <tr class="${top4}${isHighlighted}${elimClass}" data-team="${s.team}" style="--team-logo:url('${s.team}.png'); --row-c1:${TEAM_COLORS[s.team]}; --row-c2:${TEAM_COLORS_2[s.team] || TEAM_COLORS[s.team]}; --crest-veil:${CREST_VEIL[s.team] || 'transparent'};">
         <td class="pos num">${String(i+1).padStart(2,'0')}</td>
         <td>
           <div class="team-cell" style="--team-glow:${TEAM_COLORS[s.team]};" onclick="window.openFormModal('${s.team}')">
