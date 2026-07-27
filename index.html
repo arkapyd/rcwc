@@ -21,7 +21,7 @@
        2. TEAMS / TEAM_NAMES / TEAM_COLORS / TEAM_COLORS_2
                          — the ten nations, their labels and their palettes.
        3. SCHEDULE       — the 70 group fixtures.
-       4. targetDate     — the season-start countdown in the top ribbon.
+
 
      The ROLL OF HONOUR panel (in the hero, below) and the HISTORY VAULT block
      (SEASON_OUTCOMES / HISTORICAL_H2H / CAREER_STATS) are deliberately empty —
@@ -1132,50 +1132,59 @@ table:has(#standings_body) thead th:nth-child(n+2):nth-child(-n+8){
   cursor:default;
 }
 
-/* odds — win-probability bar, tucked inside an Up Next row and revealed on hover */
-.odds-inline{
-  max-height:0; opacity:0; overflow:hidden; margin-top:0;
-  transition:max-height .35s ease, opacity .25s ease, margin-top .35s ease;
+/* odds — hovering an Up Next row floods it with both nations' colours, split at
+   the win probability. a uniform dark scrim rides on top of the split so the text
+   stays legible whichever colour it happens to land on (Australia's gold and West
+   Indies' maroon otherwise need opposite treatments). */
+.feed-item.has-odds{ transition:background .3s ease; }
+.feed-item.has-odds:hover,
+.feed-item.has-odds:focus-within{
+  background:
+    linear-gradient(rgba(0,0,0,.38), rgba(0,0,0,.38)),
+    linear-gradient(90deg,
+      var(--ca) 0 calc(var(--pa) - 1px),
+      rgba(255,255,255,.85) calc(var(--pa) - 1px) calc(var(--pa) + 1px),
+      var(--cb) calc(var(--pa) + 1px) 100%);
 }
-.feed-item:hover .odds-inline,
-.feed-item:focus-within .odds-inline{
-  max-height:160px; opacity:1; margin-top:12px;
-}
-/* touch devices never fire :hover — keep the bar open there so it isn't unreachable */
-@media (hover:none){
-  .odds-inline{ max-height:160px; opacity:1; margin-top:12px; }
-}
-.odds-inline-body{
-  padding-top:11px;
-  border-top:1px dashed var(--border-bright);
-}
-.odds-head{
-  display:flex; align-items:baseline; justify-content:space-between;
-  gap:10px; margin-bottom:7px;
-}
-.odds-head .pct{
+.feed-item.has-odds:hover .team-link,
+.feed-item.has-odds:hover .vs,
+.feed-item.has-odds:hover .feed-meta,
+.feed-item.has-odds:focus-within .team-link,
+.feed-item.has-odds:focus-within .vs,
+.feed-item.has-odds:focus-within .feed-meta{ color:#fff; }
+.feed-item.has-odds:hover .team-link,
+.feed-item.has-odds:focus-within .team-link{ --team-glow:#fff; }
+
+/* percentages sit beside their nation, dimmed until the row lights up */
+.odds-pct{
   font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums;
-  font-size:1.02rem; font-weight:700; line-height:1;
+  font-size:.78rem; font-weight:700; letter-spacing:.02em;
+  color:var(--text-dim);
+  opacity:.55; transition:opacity .25s ease, color .25s ease;
 }
-.odds-label{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.55rem; letter-spacing:.2em; text-transform:uppercase;
-  color:var(--text-dim); white-space:nowrap;
-}
-.odds-track{
-  display:flex; height:13px;
-  border:1px solid var(--border-bright); border-radius:4px;
-  overflow:hidden; background:var(--surface-3);
-}
-.odds-fill{ height:100%; transition:width .55s cubic-bezier(.4,0,.2,1); }
-.odds-fill.a{ border-right:2px solid var(--surface); }
+.feed-item.has-odds:hover .odds-pct,
+.feed-item.has-odds:focus-within .odds-pct{ color:#fff; opacity:1; }
+
+/* the verdict swaps in over the UPCOMING tag without shifting the layout */
+.meta-right{ position:relative; display:inline-flex; align-items:center; }
+.meta-right .tag-upcoming{ transition:opacity .2s ease; }
 .odds-verdict{
-  margin-top:8px; text-align:center;
+  position:absolute; right:0; top:50%; transform:translateY(-50%);
+  white-space:nowrap; pointer-events:none;
   font-family:'JetBrains Mono',monospace;
   font-size:.6rem; letter-spacing:.14em; text-transform:uppercase;
-  color:var(--text-dim);
+  color:#fff; opacity:0; transition:opacity .25s ease;
 }
-.odds-verdict strong{ color:var(--text-muted); font-weight:700; }
+.feed-item.has-odds:hover .tag-upcoming,
+.feed-item.has-odds:focus-within .tag-upcoming{ opacity:0; }
+.feed-item.has-odds:hover .odds-verdict,
+.feed-item.has-odds:focus-within .odds-verdict{ opacity:1; }
+
+/* touch devices never fire :hover — keep the numbers readable there without
+   flooding every row with colour */
+@media (hover:none){
+  .odds-pct{ opacity:1; color:var(--text-muted); }
+}
 
 /* playoff scenarios grid (matches manager grid structure) */
 .playoff-grid {
@@ -2007,7 +2016,6 @@ button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
   .ribbon-logo{ height:38px; width:38px; }
   .ribbon-title{ font-size:.8rem; letter-spacing:.06em; }
   #live_clock{ display:none; }
-  #s1_countdown{ font-size:.62rem; padding:5px 8px; }
   #progress_text{ font-size:.55rem; margin-right:0; }
   #conn_banner{ top:55px; }
 
@@ -2081,7 +2089,6 @@ button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
     </div>
   </div>
   <div class="ribbon-right">
-    <div id="s1_countdown" style="font-family:'JetBrains Mono',monospace; font-size:.78rem; color:var(--accent); background:rgba(var(--accent-rgb),0.1); border:1px solid rgba(var(--accent-rgb),0.3); padding:6px 12px; border-radius:4px; letter-spacing:.5px; display:none;"></div>
     <div id="live_clock">— — —</div>
   </div>
   <div id="progress_bar_wrap">
@@ -2718,7 +2725,7 @@ button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
     <!-- AFTER -->
     <div style="font-size:.88rem; color:var(--text-muted); line-height:1.6;">
       <p><strong style="color:var(--accent);">strength:</strong> head-to-head 45% (90% manager rivalry · 10% nation rivalry, all banked seasons + live S1) · present form 55% (BASRA, BEWM & current win/loss-streak confidence). the two nations' strengths are then compared head-to-head.</p>
-      <p><strong style="color:var(--accent);">the bar:</strong> hover any fixture in <em>Up Next</em>. The two strengths are normalised against each other and drawn as a single 100% line — each nation's share painted in its own primary colour. A 50/50 split means the engine can't separate them.</p>
+      <p><strong style="color:var(--accent);">the split:</strong> hover any fixture in <em>Up Next</em> and the row floods with both nations' colours, divided at the win probability. A 50/50 split means the engine can't separate them.</p>
       <p><strong style="color:var(--accent);">reading it:</strong> this is a projection from results so far, not a market. Early in the season, with little form banked, most fixtures will sit close to even.</p>
       <p style="margin-top:12px; font-style:italic; font-size:.8rem; color:var(--text-dim);">predictive & entertainment only.</p>
     </div>
@@ -4207,19 +4214,28 @@ function renderUpcomingFeed(){
     document.getElementById('upcoming_meta').innerText = '0 left';
     return;
   }
-  el.innerHTML = upcoming.map(f => `
-    <div class="feed-item" tabindex="0">
+  el.innerHTML = upcoming.map(f => {
+    const o = oddsFor(f);
+    const cls = o ? 'feed-item has-odds' : 'feed-item';
+    const style = o ? ` style="--pa:${o.pA.toFixed(2)}%; --ca:${o.cA}; --cb:${o.cB};"` : '';
+    return `
+    <div class="${cls}" tabindex="0"${style}>
       <div class="feed-meta">
         <span>${f.id}</span>
-        <span class="tag-upcoming">Upcoming</span>
+        <span class="meta-right">
+          <span class="tag-upcoming">Upcoming</span>
+          ${o ? `<span class="odds-verdict">${o.verdict}</span>` : ''}
+        </span>
       </div>
       <div class="feed-fixture">
         <span class="team-link" style="--team-glow:${TEAM_COLORS[f.a] || 'var(--text-muted)'};" onclick="window.takeoverTeam('${f.a}')">${TEAM_NAMES[f.a] || 'TBD'}</span>
+        ${o ? `<span class="odds-pct">${o.pA.toFixed(1)}%</span>` : ''}
         <span class="vs">vs</span>
+        ${o ? `<span class="odds-pct">${o.pB.toFixed(1)}%</span>` : ''}
         <span class="team-link" style="--team-glow:${TEAM_COLORS[f.b] || 'var(--text-muted)'};" onclick="window.takeoverTeam('${f.b}')">${TEAM_NAMES[f.b] || 'TBD'}</span>
       </div>
-      ${oddsBarHtml(f)}
-    </div>`).join('');
+    </div>`;
+  }).join('');
     
   const remainingText = selectedTeamFilter
     ? `showing ${upcoming.length} upcoming`
@@ -5195,7 +5211,7 @@ function renderManagerH2HMatrix(){
 // global helper to calculate dynamic team strength (used for odds and underdog upsets)
 // model: 45% head-to-head (90% manager-vs-manager rivalry, 10% team-vs-team) +
 // 55% present form (BASRA, BEWM, and current win/loss-streak confidence). everything sits
-// on a ~0–100 scale where 50 is neutral; oddsBarHtml normalises the two into a 100% split.
+// on a ~0–100 scale where 50 is neutral; oddsFor normalises the two into a 100% split.
 window.calcTeamStrength = function(t, opp) {
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   const battingInnings = getBattingInnings();
@@ -5347,12 +5363,11 @@ window.calcTotalCareerValue = function(team) {
   // combine for the true living franchise stock price
   return legacyBaseValue + s1ValueAdded;
 };
-// win-probability bar for one upcoming fixture, rendered inside its Up Next row.
-// the two nations' strength scores (see calcTeamStrength) are normalised against
-// each other so the pair always sums to 100, and each share is painted in that
-// nation's primary colour. returns '' for knockout placeholders with no teams yet.
-function oddsBarHtml(f){
-  if(!TEAMS.includes(f.a) || !TEAMS.includes(f.b)) return '';
+// win probability for one upcoming fixture. the two nations' strength scores (see
+// calcTeamStrength) are normalised against each other so the pair sums to 100.
+// returns null for knockout placeholders whose teams aren't decided yet.
+function oddsFor(f){
+  if(!TEAMS.includes(f.a) || !TEAMS.includes(f.b)) return null;
 
   const sA = window.calcTeamStrength(f.a, f.b);
   const sB = window.calcTeamStrength(f.b, f.a);
@@ -5363,32 +5378,19 @@ function oddsBarHtml(f){
   pA = Math.max(3, Math.min(97, pA));
   const pB = 100 - pA;
 
-  const cA = TEAM_COLORS[f.a] || 'var(--accent)';
-  const cB = TEAM_COLORS[f.b] || 'var(--accent-2)';
   const gap = Math.abs(pA - pB);
   const fav = pA >= pB ? f.a : f.b;
-
   let verdict;
   if(gap < 4)       verdict = 'too close to call';
-  else if(gap < 12) verdict = `a slight edge to <strong>${TEAM_NAMES[fav]}</strong>`;
-  else if(gap < 26) verdict = `<strong>${TEAM_NAMES[fav]}</strong> favoured`;
-  else              verdict = `<strong>${TEAM_NAMES[fav]}</strong> heavily favoured`;
+  else if(gap < 12) verdict = 'slight edge · ' + TEAM_NAMES[fav];
+  else if(gap < 26) verdict = TEAM_NAMES[fav] + ' favoured';
+  else              verdict = TEAM_NAMES[fav] + ' heavily favoured';
 
-  return `
-      <div class="odds-inline">
-        <div class="odds-inline-body">
-          <div class="odds-head">
-            <span class="pct" style="color:${cA};">${pA.toFixed(1)}%</span>
-            <span class="odds-label">win probability</span>
-            <span class="pct" style="color:${cB};">${pB.toFixed(1)}%</span>
-          </div>
-          <div class="odds-track" role="img" aria-label="${TEAM_NAMES[f.a]} ${pA.toFixed(1)} percent, ${TEAM_NAMES[f.b]} ${pB.toFixed(1)} percent">
-            <div class="odds-fill a" style="width:${pA}%; background:${cA};"></div>
-            <div class="odds-fill b" style="width:${pB}%; background:${cB};"></div>
-          </div>
-          <div class="odds-verdict">${verdict}</div>
-        </div>
-      </div>`;
+  return {
+    pA, pB, verdict,
+    cA: TEAM_COLORS[f.a] || 'var(--accent)',
+    cB: TEAM_COLORS[f.b] || 'var(--accent-2)'
+  };
 }
 
 // ============================== FAIRPLAY (FP) ==============================
@@ -6322,32 +6324,12 @@ document.addEventListener('keydown', e => {
 });
 
 // ============================== LIVE CLOCK ==============================
-// SEASON START — edit me. The ribbon shows a live countdown until this moment,
-// then hides itself automatically once the date has passed.
-const targetDate = new Date("August 15, 2026 00:00:00").getTime();
 setInterval(() => {
-  const now = new Date().getTime();
-  
   const el = document.getElementById('live_clock');
   if(el) el.innerText = new Date().toLocaleString('en-GB', {
     weekday:'short', day:'2-digit', month:'short',
     hour:'2-digit', minute:'2-digit', second:'2-digit'
   });
-
-  const distance = targetDate - now;
-  const countEl = document.getElementById('s1_countdown');
-  if(countEl) {
-    if(distance > 0) {
-      countEl.style.display = 'block';
-      const d = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const s = Math.floor((distance % (1000 * 60)) / 1000);
-      countEl.innerText = `S1 STARTS IN: ${d}D ${h}H ${m}M ${s}S`;
-    } else {
-      countEl.style.display = 'none';
-    }
-  }
 }, 1000);
 </script>
 </body>
