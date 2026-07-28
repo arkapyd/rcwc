@@ -999,6 +999,22 @@ table:has(#standings_body) thead th:nth-child(n+2):nth-child(-n+8){
   color:var(--text-dim); font-weight:400;
   font-size:.85rem; padding:0 4px;
 }
+/* upcoming rows: one side hard left, the other hard right, vs dead centre */
+.has-odds .feed-fixture{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center; gap:0;
+}
+.has-odds .side{
+  display:flex; align-items:baseline; gap:9px; min-width:0;
+}
+.has-odds .side.b{ justify-content:flex-end; }
+.has-odds .side.b .team-link{ order:2; }
+.has-odds .side.b .odds-pct{ order:1; }
+.has-odds .feed-fixture .vs{ padding:0 16px; }
+.has-odds .team-link{
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
 .feed-score{
   margin-top:8px;
   font-family:'JetBrains Mono',monospace;
@@ -1137,15 +1153,6 @@ table:has(#standings_body) thead th:nth-child(n+2):nth-child(-n+8){
    stays legible whichever colour it happens to land on (Australia's gold and West
    Indies' maroon otherwise need opposite treatments). */
 .feed-item.has-odds{ transition:background .3s ease; }
-.feed-item.has-odds:hover,
-.feed-item.has-odds:focus-within{
-  background:
-    linear-gradient(rgba(0,0,0,.38), rgba(0,0,0,.38)),
-    linear-gradient(90deg,
-      var(--ca) 0 calc(var(--pa) - 1px),
-      rgba(255,255,255,.85) calc(var(--pa) - 1px) calc(var(--pa) + 1px),
-      var(--cb) calc(var(--pa) + 1px) 100%);
-}
 .feed-item.has-odds:hover .team-link,
 .feed-item.has-odds:hover .vs,
 .feed-item.has-odds:hover .feed-meta,
@@ -1154,6 +1161,44 @@ table:has(#standings_body) thead th:nth-child(n+2):nth-child(-n+8){
 .feed-item.has-odds:focus-within .feed-meta{ color:#fff; }
 .feed-item.has-odds:hover .team-link,
 .feed-item.has-odds:focus-within .team-link{ --team-glow:#fff; }
+
+/* crest watermarks — each nation's logo fades in from its own outer corner on hover,
+   masked so it melts toward the centre instead of showing a hard edge. mirrors the
+   manager-card treatment. sits under the split fill and the text. */
+.feed-item.has-odds{ position:relative; isolation:isolate; overflow:hidden; }
+.feed-item.has-odds > *{ position:relative; z-index:2; }
+/* ::before = the colour split (z0). ::after = both crests, one per corner (z1),
+   so they ride ABOVE the fill but BELOW the text. all three appear together on hover. */
+.feed-item.has-odds::before{
+  content:''; position:absolute; inset:0; z-index:0;
+  opacity:0; pointer-events:none; transition:opacity .3s ease;
+  background:
+    linear-gradient(rgba(0,0,0,.38), rgba(0,0,0,.38)),
+    linear-gradient(90deg,
+      var(--ca) 0 calc(var(--pa) - 1px),
+      rgba(255,255,255,.85) calc(var(--pa) - 1px) calc(var(--pa) + 1px),
+      var(--cb) calc(var(--pa) + 1px) 100%);
+}
+.feed-item.has-odds::after{
+  content:''; position:absolute; inset:0; z-index:1;
+  opacity:0; pointer-events:none; transition:opacity .3s ease;
+  background-image:var(--logo-a, none), var(--logo-b, none);
+  background-repeat:no-repeat, no-repeat;
+  background-size:auto 132%, auto 132%;
+  background-position:left -6px center, right -6px center;
+  -webkit-mask-image:
+    linear-gradient(90deg, #000 0%, transparent 46%),
+    linear-gradient(270deg, #000 0%, transparent 46%);
+  -webkit-mask-composite:source-over;
+          mask-image:
+    linear-gradient(90deg, #000 0%, transparent 46%),
+    linear-gradient(270deg, #000 0%, transparent 46%);
+          mask-composite:add;
+}
+.feed-item.has-odds:hover::before,
+.feed-item.has-odds:focus-within::before{ opacity:1; }
+.feed-item.has-odds:hover::after,
+.feed-item.has-odds:focus-within::after{ opacity:.20; }
 
 /* percentages sit beside their nation, dimmed until the row lights up */
 .odds-pct{
@@ -2734,13 +2779,13 @@ button.danger:hover{ background:rgba(var(--loss-rgb),.1); }
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyCzTYh9gXEooeBnL2h6ITU6kR8VR0byDnA",
-  authDomain: "rcwc-9b4ee.firebaseapp.com",
-  databaseURL: "https://rcwc-9b4ee-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "rcwc-9b4ee",
-  storageBucket: "rcwc-9b4ee.firebasestorage.app",
-  messagingSenderId: "204963758123",
-  appId: "1:204963758123:web:75ca7b3882000e2555aa6e"
+  apiKey: "AIzaSyC_q2XGkzgWGVSX4_RSckQnQVrKNdVc6ek",
+  authDomain: "rcpls4.firebaseapp.com",
+  databaseURL: "https://rcpls4-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "rcpls4",
+  storageBucket: "rcpls4.firebasestorage.app",
+  messagingSenderId: "381635970086",
+  appId: "1:381635970086:web:56bba7dd966d6cc8b6d2e7"
 };
 // compat sdk: works as a regular script without es module restrictions.
 // same firebase project as before — but season one writes to its own node
@@ -4217,7 +4262,9 @@ function renderUpcomingFeed(){
   el.innerHTML = upcoming.map(f => {
     const o = oddsFor(f);
     const cls = o ? 'feed-item has-odds' : 'feed-item';
-    const style = o ? ` style="--pa:${o.pA.toFixed(2)}%; --ca:${o.cA}; --cb:${o.cB};"` : '';
+    const style = o
+      ? ` style="--pa:${o.pA.toFixed(2)}%; --ca:${o.cA}; --cb:${o.cB}; --logo-a:url('${f.a}.png'); --logo-b:url('${f.b}.png');"`
+      : '';
     return `
     <div class="${cls}" tabindex="0"${style}>
       <div class="feed-meta">
@@ -4228,11 +4275,15 @@ function renderUpcomingFeed(){
         </span>
       </div>
       <div class="feed-fixture">
-        <span class="team-link" style="--team-glow:${TEAM_COLORS[f.a] || 'var(--text-muted)'};" onclick="window.takeoverTeam('${f.a}')">${TEAM_NAMES[f.a] || 'TBD'}</span>
-        ${o ? `<span class="odds-pct">${o.pA.toFixed(1)}%</span>` : ''}
+        <span class="side a">
+          <span class="team-link" style="--team-glow:${TEAM_COLORS[f.a] || 'var(--text-muted)'};" onclick="window.takeoverTeam('${f.a}')">${TEAM_NAMES[f.a] || 'TBD'}</span>
+          ${o ? `<span class="odds-pct">${o.pA.toFixed(1)}%</span>` : ''}
+        </span>
         <span class="vs">vs</span>
-        ${o ? `<span class="odds-pct">${o.pB.toFixed(1)}%</span>` : ''}
-        <span class="team-link" style="--team-glow:${TEAM_COLORS[f.b] || 'var(--text-muted)'};" onclick="window.takeoverTeam('${f.b}')">${TEAM_NAMES[f.b] || 'TBD'}</span>
+        <span class="side b">
+          <span class="team-link" style="--team-glow:${TEAM_COLORS[f.b] || 'var(--text-muted)'};" onclick="window.takeoverTeam('${f.b}')">${TEAM_NAMES[f.b] || 'TBD'}</span>
+          ${o ? `<span class="odds-pct">${o.pB.toFixed(1)}%</span>` : ''}
+        </span>
       </div>
     </div>`;
   }).join('');
