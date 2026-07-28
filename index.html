@@ -1182,7 +1182,6 @@ table:has(#standings_body) thead th:nth-child(n+2):nth-child(-n+8){
 .feed-item.has-odds::after{
   content:''; position:absolute; inset:0; z-index:1;
   opacity:0; pointer-events:none; transition:opacity .3s ease;
-  mix-blend-mode:screen;   /* crests lighten the fill — never a dark blob */
   background-image:var(--logo-a, none), var(--logo-b, none);
   background-repeat:no-repeat, no-repeat;
   background-size:auto 120%, auto 120%;
@@ -1199,7 +1198,7 @@ table:has(#standings_body) thead th:nth-child(n+2):nth-child(-n+8){
 .feed-item.has-odds:hover::before,
 .feed-item.has-odds:focus-within::before{ opacity:1; }
 .feed-item.has-odds:hover::after,
-.feed-item.has-odds:focus-within::after{ opacity:.10; }
+.feed-item.has-odds:focus-within::after{ opacity:.16; }
 
 /* percentages sit beside their nation, dimmed until the row lights up */
 .odds-pct{
